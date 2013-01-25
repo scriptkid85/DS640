@@ -14,14 +14,19 @@ import java.util.zip.ZipOutputStream;
 
 public class ZipProcess implements MigratableProcess {
   private static final long serialVersionUID = 1L;
+
   private TransactionalFileInputStream inFile;
+
   private TransactionalFileOutputStream outFile;
+
   private String id;
+
   private String pathPrefix;
+
   private volatile boolean suspending;
 
   public ZipProcess(String args[]) throws Exception {
-    if (args.length != 2) {
+    if (args.length != 3) {
       System.out.println("usage: ZipProcess <inputFile1> <outputFile>");
       throw new Exception("Invalid Arguments");
     }
@@ -40,10 +45,10 @@ public class ZipProcess implements MigratableProcess {
     // if it resumes running, read object in
     String objname = pathPrefix + "/serialize/" + id + ".dat";
     File objFile = new File(objname);
-    if(objFile.exists()) {
+    if (objFile.exists()) {
       try {
         ObjectInputStream in = new ObjectInputStream(new TransactionalFileInputStream(objname));
-        ZipProcess zp = (ZipProcess)in.readObject();
+        ZipProcess zp = (ZipProcess) in.readObject();
         this.id = zp.id;
         this.inFile = zp.inFile;
         this.outFile = zp.outFile;
@@ -57,7 +62,7 @@ public class ZipProcess implements MigratableProcess {
         e.printStackTrace();
       }
     }
-      
+
     CheckedOutputStream csum = new CheckedOutputStream(outFile, new Adler32());
     ZipOutputStream zos = new ZipOutputStream(csum);
     BufferedOutputStream out = new BufferedOutputStream(zos);
@@ -72,12 +77,13 @@ public class ZipProcess implements MigratableProcess {
         int c = in.read();
         if (c == -1) {
           // Checksum valid only after the file has been closed!
-          System.out.println("[ZipProcess]: Write done! Checksum: " + csum.getChecksum().getValue());
+          System.out
+                  .println("[ZipProcess]: Write done! Checksum: " + csum.getChecksum().getValue());
           break;
         }
         out.write(c);
         out.flush();
-        
+
         // Make ZipProcess take longer
         try {
           Thread.sleep(100);
@@ -86,14 +92,14 @@ public class ZipProcess implements MigratableProcess {
         }
       }
       // not sure whether or not to close the file
-//      in.close();
-//      out.flush();
-//      out.close();
+      // in.close();
+      // out.flush();
+      // out.close();
     } catch (EOFException e) {
       // End of File
     } catch (IOException e) {
       System.out.println("[ZipProcess]: Error: " + e);
-    } 
+    }
 
     // wake up suspend() so that we can call suspend() next time.
     suspending = false;
@@ -101,7 +107,7 @@ public class ZipProcess implements MigratableProcess {
 
   public void suspend() {
     suspending = true;
-    
+
     // package up
     // TODO: this path need to be on afs so that multiple processes can access
     String objname = pathPrefix + "/serialize/" + id + ".dat";
@@ -116,7 +122,7 @@ public class ZipProcess implements MigratableProcess {
       System.err.println("Serialize file io exception. id:" + id);
       e1.printStackTrace();
     }
-    
+
     while (suspending) {
       try {
         Thread.sleep(100);
@@ -125,7 +131,7 @@ public class ZipProcess implements MigratableProcess {
       }
     }
   }
-  
+
   @Override
   public String toString() {
     return id;
