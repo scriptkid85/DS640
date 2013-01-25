@@ -12,6 +12,12 @@ import java.util.zip.CheckedOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+/**
+ * ZipProcess is a implmentation of MigratableProcess,
+ * which can zip a input file to a specific output position.
+ * 
+ * @author Zeyuan Li
+ * */
 public class ZipProcess implements MigratableProcess {
   private static final long serialVersionUID = 1L;
   private TransactionalFileInputStream inFile;
@@ -32,15 +38,20 @@ public class ZipProcess implements MigratableProcess {
     inFile = new TransactionalFileInputStream(args[1]);
     outFile = new TransactionalFileOutputStream(args[2]);
   }
+  
+  /** 
+   * default constructor for transfer processes around nodes and resume process
+   */
+  public ZipProcess() {}
 
   /**
    * Note: some zip code is adapted from Chapter I/O in book "Think in Java"
    * */
   public void run() {
     // if it resumes running, read object in
-    String objname = pathPrefix + "/serialize/" + id + ".dat";
-    File objFile = new File(objname);
-    if(objFile.exists()) {
+    if(inFile == null) {
+      String objname = pathPrefix + "/serialize/" + id + ".dat";
+      File objFile = new File(objname);
       try {
         ObjectInputStream in = new ObjectInputStream(new TransactionalFileInputStream(objname));
         ZipProcess zp = (ZipProcess)in.readObject();
