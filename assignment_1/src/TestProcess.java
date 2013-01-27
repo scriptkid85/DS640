@@ -21,34 +21,41 @@ import java.util.zip.ZipOutputStream;
 public class TestProcess implements MigratableProcess {
   private static final long serialVersionUID = 1L;
 
-  private TransactionalFileInputStream inFile;
-
-  private TransactionalFileOutputStream outFile;
+  private static int sleeptime;
 
   private String id;
 
-  private String pathPrefix;
 
-  private volatile boolean suspending;
 
-  public TestProcess(String args[]) throws Exception {
-    if (args.length != 3) {
-      System.out.println("usage: ZipProcess <inputFile1> <outputFile>");
-      throw new Exception("Invalid Arguments");
-    }
-
-  }
-  
   /** 
    * default constructor for transfer processes around nodes and resume process
+   * @throws Exception 
    */
-  public TestProcess() {}
+  public TestProcess (String[] sleeptime) throws Exception {
+    if(sleeptime.length != 2){
+      System.out.println("usage: TestProcess sleeptime");
+      throw new Exception("Invalid Arguments");
+    }
+      
+    this.sleeptime = Integer.parseInt(sleeptime[1]);
+  }
+
+  public TestProcess() {
+    this.sleeptime = 0;
+  }
 
   /**
    * Note: some zip code is adapted from Chapter I/O in book "Think in Java"
+   * @throws InterruptedException 
    * */
-  public void run() {
-    System.out.println("Testprocess running!");
+  public void run(){
+    System.out.println("Testprocess starts running!");
+    try{
+      Thread.sleep(sleeptime * 1000);
+    }catch(InterruptedException e){
+      
+    }
+    
     
   }
 
