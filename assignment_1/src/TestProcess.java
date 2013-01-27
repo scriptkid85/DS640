@@ -13,10 +13,10 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 /**
- * ZipProcess is a implmentation of MigratableProcess,
- * which can zip a input file to a specific output position.
+ * TestProcess which is used to test the ProcessManager
+ * It can sleep (run) an arbitrary time period 
  * 
- * @author Zeyuan Li
+ * @author Guanyu Wang
  * */
 public class TestProcess implements MigratableProcess {
   private static final long serialVersionUID = 1L;
@@ -27,10 +27,7 @@ public class TestProcess implements MigratableProcess {
 
 
 
-  /** 
-   * default constructor for transfer processes around nodes and resume process
-   * @throws Exception 
-   */
+
   public TestProcess (String[] sleeptime) throws Exception {
     if(sleeptime.length != 2){
       System.out.println("usage: TestProcess sleeptime");
@@ -44,10 +41,7 @@ public class TestProcess implements MigratableProcess {
     this.sleeptime = 0;
   }
 
-  /**
-   * Note: some zip code is adapted from Chapter I/O in book "Think in Java"
-   * @throws InterruptedException 
-   * */
+
   public void run(){
     System.out.println("Testprocess starts running!");
     try{

@@ -1,7 +1,12 @@
 import java.util.Hashtable;
 import java.util.Set;
 
-
+/**
+ * RunningProcessTable is a structed table with synchronized add and remove
+ * method for updating the process list in ProcessManager
+ * 
+ * @author Guanyu Wang
+ * */
 public class RunningProcessTable {
   private Hashtable<Thread, String> process_table;
   

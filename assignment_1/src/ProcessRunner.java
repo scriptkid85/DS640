@@ -2,7 +2,11 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.StringTokenizer;
 
-
+/**
+ * ProcessRunner is a separated thread for running command process
+ * 
+ * @author Guanyu Wang
+ * */
 public class ProcessRunner extends Thread{
   
   private String command;
