@@ -3,11 +3,12 @@ import java.io.*;
 public class TransactionalFileInputStream extends InputStream implements Serializable {
 
   private RandomAccessFile raf;
+  private File f;
 
   private int curidx;
 
   public TransactionalFileInputStream(String fpath) {
-    File f = new File(fpath);
+    f = new File(fpath);
     curidx = 0;
     raf = null;
     try {
@@ -21,6 +22,7 @@ public class TransactionalFileInputStream extends InputStream implements Seriali
 
   @Override
   public int read() throws IOException {
+    raf = new RandomAccessFile(f, "rw");
     raf.seek(curidx);
     // TODO: bottleneck. Should read n bytes instead of one
     curidx++;
