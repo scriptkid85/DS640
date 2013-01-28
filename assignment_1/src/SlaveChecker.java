@@ -25,7 +25,8 @@ public class SlaveChecker implements Runnable{
   
   @Override
   public void run() {
-    
+    System.out.println("start slave checking");
+
     if(st.size() == 0){
       System.out.println("not slave");
       return;

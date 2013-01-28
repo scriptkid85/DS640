@@ -9,11 +9,19 @@ public class ProcessBalancerStrategist {
   }
   
   public void balance(){
+    
+    System.out.println("Start balancing");
+    
+    if(st.size() == 0){
+      System.out.println("Empty");
+      return;
+    }
+    SlaveTable temptable = st.clone();
     int sumofprocess = 0;
     int tempnum, maxnum = -1, minnum = Integer.MAX_VALUE;
     String[] maxslave = null, minslave = null;
-    for(String[] slavehost: st.keySet()){
-      tempnum = st.get(slavehost);
+    for(String[] slavehost: temptable.keySet()){
+      tempnum = temptable.get(slavehost);
       if(tempnum > maxnum){
         maxnum = tempnum;
         maxslave = slavehost;
@@ -24,9 +32,14 @@ public class ProcessBalancerStrategist {
       }
       sumofprocess += tempnum;
     }
-    int averagenum = sumofprocess / st.size();
-    int offset = Math.min(maxnum - averagenum, averagenum - minnum);
-    int balancednum = offset / 10;
+    int averagenum = sumofprocess / temptable.size();
+    int offset = Math.max(0, Math.min(maxnum - averagenum, averagenum - minnum));
+
+//  int balancednum = offset / 10;
+//  just for test
+    int balancednum = offset;
+    
+    System.out.println("finish offsetting: " + balancednum);
     
     CommMoveProcess  cmp;
     if(balancednum > 0){
