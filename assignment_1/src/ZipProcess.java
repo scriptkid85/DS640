@@ -2,7 +2,9 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.EOFException;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
@@ -22,24 +24,28 @@ public class ZipProcess implements MigratableProcess {
   private static final long serialVersionUID = 1L;
 
   private TransactionalFileInputStream inFile;
-
   private TransactionalFileOutputStream outFile;
-
+//  private FileInputStream inFile;
+//  private FileOutputStream outFile;
+  
   private String id;
-
-  private String pathPrefix;
+  private String pathPrefix, infilename;
 
   private volatile boolean suspending;
 
   public ZipProcess(String args[]) throws Exception {
     if (args.length != 3) {
+      //System.out.println(args.length + " " + args[0] +" "+ args[1]);
       System.out.println("usage: ZipProcess <inputFile1> <outputFile>");
-      throw new Exception("Invalid Arguments");
+      throw new Exception(" Invalid Arguments");
     }
 
     // TODO: pathPrefix is a afs prefix for input/output file
     pathPrefix = "";
     id = args[1] + "_ZipProcess";
+    infilename = args[1];
+//    inFile = new FileInputStream(args[1]);
+//    outFile = new FileOutputStream(args[2]);
     inFile = new TransactionalFileInputStream(args[1]);
     outFile = new TransactionalFileOutputStream(args[2]);
   }
@@ -82,7 +88,8 @@ public class ZipProcess implements MigratableProcess {
     BufferedInputStream in = new BufferedInputStream(inFile);
 
     try {
-      zos.putNextEntry(new ZipEntry(inFile.toString()));
+      zos.putNextEntry(new ZipEntry(infilename));
+      //zos.putNextEntry(new ZipEntry("test.txt"));
       while (!suspending) {
         // read and write a byte each time
         int c = in.read();
@@ -102,10 +109,10 @@ public class ZipProcess implements MigratableProcess {
           // ignore it
         }
       }
-      // not sure whether or not to close the file
-      // in.close();
-      // out.flush();
-      // out.close();
+      // close the stream
+       in.close();
+       out.flush();
+       out.close();
     } catch (EOFException e) {
       // End of File
     } catch (IOException e) {
@@ -146,6 +153,12 @@ public class ZipProcess implements MigratableProcess {
   @Override
   public String toString() {
     return id;
+  }
+  
+  public static void main(String args[]) throws Exception {
+    String[] s = {"ZipProcess", "data/test.txt", "data/res.zip"};
+    ZipProcess zp = new ZipProcess(s);
+    zp.run();
   }
 
 }
