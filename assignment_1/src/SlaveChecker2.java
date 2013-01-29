@@ -7,9 +7,9 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-public class SlaveChecker implements Runnable{
+public class SlaveChecker2 implements Runnable{
   
-  private SlaveTable st;
+  private SlaveTable2 st;
   
   private String slavehostname;
   
@@ -20,21 +20,21 @@ public class SlaveChecker implements Runnable{
   BufferedReader in;
   String receivedcontent;
   
-  public SlaveChecker(SlaveTable st){
+  public SlaveChecker2(SlaveTable2 st){
     this.st = st;
   }
   
   @Override
   public void run() {
-    System.out.println("start slave checking");
+    System.out.println("start slave checking 2");
 
     if(st.size() == 0){
-      System.out.println("not slave");
+      System.out.println("no slave");
       return;
     }
     
     //save old slavetable
-    SlaveTable tempst = st.clone();
+    SlaveTable2 tempst = st.clone();
     
     
     for(String[] slavehost: tempst.keySet()){
@@ -58,12 +58,26 @@ public class SlaveChecker implements Runnable{
           ClientSocket = new Socket(slavehostname, slaveport);
           out = new PrintWriter(ClientSocket.getOutputStream(), true);
           InputStream is = ClientSocket.getInputStream();
-          in = new BufferedReader(new InputStreamReader(is));
+//          in = new BufferedReader(new InputStreamReader(is));
           out.println("Alive?");
-          receivedcontent = in.readLine();
+//          receivedcontent = in.readLine();
+          RunningProcessTable rpt = new RunningProcessTable();
+          ObjectInputStream ois = new ObjectInputStream(is);
+          try {
+            rpt = (RunningProcessTable) ois.readObject();
+          } catch (ClassNotFoundException e) {
+            System.out.println("Cannot receive the Running Process Table from slave...");
+            e.printStackTrace();
+          }
           
-          st.putslave(slavehost, Integer.parseInt(receivedcontent));
-          System.out.println("still alive and running process is " + Integer.parseInt(receivedcontent));
+          ois.close();
+          
+          st.putslave(slavehost, rpt);
+          System.out.println("still alive and running process: ");
+          for(Thread process: rpt.keySet()){
+            System.out.println(rpt.get(process));
+          }
+            
       } catch (UnknownHostException e) {
           System.err.println("Don't know about slave: " + slavehostname);
           st.removeslave(slavehost);

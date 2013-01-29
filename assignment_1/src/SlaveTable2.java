@@ -3,19 +3,19 @@ import java.util.Hashtable;
 import java.util.Set;
 
 
-public class SlaveTable implements Serializable{
+public class SlaveTable2 implements Serializable{
   //String[0] is the slave hostname, String[1] is the port
   //and integer is the process running on corresponding slave.
-  public Hashtable<String[], Integer> slave_table;
+  public Hashtable<String[], RunningProcessTable> slave_table;
   
-  public SlaveTable(){
-    slave_table = new Hashtable<String[], Integer>();
+  public SlaveTable2(){
+    slave_table = new Hashtable<String[], RunningProcessTable>();
   }
   
-  public synchronized void putslave(String[] slavehost, int numofProcess){
+  public synchronized void putslave(String[] slavehost, RunningProcessTable rpt){
     if(slave_table.containsKey(slavehost))
       slave_table.remove(slavehost);
-    slave_table.put(slavehost, numofProcess);
+    slave_table.put(slavehost, rpt);
   }
   
   public synchronized void removeslave(String[] slavehost){
@@ -31,7 +31,7 @@ public class SlaveTable implements Serializable{
     return slave_table.keySet();
   }
   
-  public int get(String[] slavehost){
+  public RunningProcessTable get(String[] slavehost){
     return slave_table.get(slavehost);
   }
   
@@ -43,8 +43,8 @@ public class SlaveTable implements Serializable{
     return slave_table.containsKey(slavehost);
   }
   
-  public SlaveTable clone(){
-    SlaveTable newst = new SlaveTable();
+  public SlaveTable2 clone(){
+    SlaveTable2 newst = new SlaveTable2();
     for(String[] key: this.keySet()){
       newst.putslave(key, this.get(key));
     }

@@ -12,10 +12,9 @@ public class CommMasterListenThread extends Thread {
     private String receivingcontent = new String();
     private RunningProcessTable rpt;
     private SlaveTable st;
-    private InetAddress Address;; 
-    private String localhost;
-    
-    private PrintWriter out;
+    private InetAddress Address;
+
+    private CommSerializer commser;
     private BufferedReader in;
     
 
@@ -23,13 +22,7 @@ public class CommMasterListenThread extends Thread {
       this.socket = socket;
       this.st = st;
       this.rpt = rpt;
-      try{
-        Address = InetAddress.getLocalHost();
-        localhost = Address.getHostName();
-      } catch (UnknownHostException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
+      this.commser = new CommSerializer(socket);
     }
 
     public void run() {
@@ -38,9 +31,9 @@ public class CommMasterListenThread extends Thread {
           in = new BufferedReader(
                 new InputStreamReader(
                 socket.getInputStream()));
-          out = new PrintWriter(socket.getOutputStream(), true);
           //read one line from socket
           receivingcontent = in.readLine();
+          
           System.out.println("received: " + receivingcontent);
           if(receivingcontent != null){
             System.out.println("enter saving step: " + receivingcontent);
@@ -59,6 +52,7 @@ public class CommMasterListenThread extends Thread {
                 st.putslave(tempkey, 0);
               }
             }
+            commser.receive();
           }
             // TODO: deal with the stream
           in.close();

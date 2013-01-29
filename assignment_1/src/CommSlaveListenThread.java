@@ -38,7 +38,8 @@ public class CommSlaveListenThread extends Thread {
           if(receivingcontent != null){
             
             if(receivingcontent.equals("Alive?")){
-              System.out.println("sending current process number: " + rpt.size());
+              System.out.println("sending current process number: ");
+              
               out.println(rpt.size());
             }
             else if(receivingcontent.equals("Process")){  

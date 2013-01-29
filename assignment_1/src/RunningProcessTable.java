@@ -1,3 +1,4 @@
+import java.io.Serializable;
 import java.util.Hashtable;
 import java.util.Set;
 
@@ -7,7 +8,7 @@ import java.util.Set;
  * 
  * @author Guanyu Wang
  * */
-public class RunningProcessTable {
+public class RunningProcessTable implements Serializable{
   private Hashtable<Thread, String> process_table;
   
   public RunningProcessTable(){

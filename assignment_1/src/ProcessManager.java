@@ -18,9 +18,15 @@ public class ProcessManager {
 
   private static RunningProcessTable process_table;
   private static SlaveTable slave_table;
-  private static CommListener cmmMM;
+  
+  private static SlaveTable2 slave_table2;
+  
+
   private static Thread listenthread;
+  
   private static ProcessBalancer pb;
+
+  
   private static int localport;
   private static int masterport;
 
@@ -172,8 +178,9 @@ public class ProcessManager {
     BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
     process_table = new RunningProcessTable();
     slave_table = new SlaveTable();
+    slave_table2 = new SlaveTable2();
     
-    cmmMM = new CommListener(mode, localport, process_table, slave_table);
+    CommListener cmmMM = new CommListener(mode, localport, process_table, slave_table);
     listenthread = new Thread(cmmMM);
     listenthread.start();
     
@@ -186,7 +193,7 @@ public class ProcessManager {
       ScheduledFuture<?> schFuture = schExec.scheduleWithFixedDelay(pb, 0, 5, TimeUnit.SECONDS);
     }
     else{
-      CommSender csender = new CommSender(masterhostname, masterport, "NewSlave: " + localhostname + " " + Integer.toString(localport));
+      CommSender csender = new CommSender(masterhostname, masterport, "NewSlave: " + localhostname + " " + Integer.toString(localport), process_table);
       csender.run();
     }
     

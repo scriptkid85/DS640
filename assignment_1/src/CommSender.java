@@ -14,11 +14,21 @@ public class CommSender implements Runnable{
   private PrintWriter out;
   private BufferedReader in;
   private String sendingcontent;
+  private RunningProcessTable rpt;
+  private CommSerializer commser;
   
   public CommSender(String hostname, int port, String content){
     this.hostname = hostname;
     this.sendingcontent = content;
     this.port = port;
+    this.rpt = null;
+  }
+  
+  public CommSender(String hostname, int port, String content, RunningProcessTable rpt){
+    this.hostname = hostname;
+    this.sendingcontent = content;
+    this.port = port;
+    this.rpt = rpt;
   }
   
   public void run(){
@@ -46,9 +56,14 @@ public class CommSender implements Runnable{
           out.flush();
           
       }
-  
-      out.close();
-      try {
+
+      if(rpt != null){
+        commser = new CommSerializer(ClientSocket);
+        commser.send(rpt);
+      }
+      
+      try {      
+        out.close();
         ClientSocket.close();
       } catch (IOException e) {
         // TODO Auto-generated catch block
