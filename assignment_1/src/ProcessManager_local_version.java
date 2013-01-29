@@ -1,32 +1,16 @@
 import java.io.*;
 import java.lang.reflect.*;
-import java.net.InetAddress;
 import java.util.StringTokenizer;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 
 /**
- * ProcessManager is a process management tool which support Migratable process and load
- * re-distribution.
- * 
+ * ProcessManager is a process management tool which support Migratable process.
+ * Local version of ProcessManager
  * @author Guanyu Wang
  * */
-public class ProcessManager {
+public class ProcessManager_local_version {
 
   private static RunningProcessTable process_table;
-  private static SlaveTable slave_table;
-  private static CommListener cmmMM;
-  private static Thread listenthread;
-  private static ProcessBalancer pb;
-  private static int localport;
-  private static int masterport;
-
-  private static String mode = new String();
-  private static String masterhostname = new String();
-  private static String localhostname;
   
   public static void Ps() {
     if (process_table.size() < 1) {
@@ -121,76 +105,25 @@ public class ProcessManager {
       return;
     }
   }
-  
-  
-  private static void ArgParser(String args[]){
-    if(args.length == 0 ){
-      mode = "Master";
-      localport = 4444;
-    }
-    if(args.length % 2 != 0){
-      System.out.println("Invalid arguments for ProcessManager.");
-      System.out.println("Usage: no args or ”-p <local port> (for master)” ”-c <hostname>” ”-mp <master port>” ”-sp <s port>” ");
-      System.exit(0);
-    }
-    for(int i = 0; i < args.length; ++i){
-      if(args[i].equals("-c")){
-        ++i;
-        mode = "Slave";
-        localport = 4444;
-        masterhostname = args[i];
-      }
-      else if(args[i].equals("-p")){
-        ++i;
-        mode = "Master";
-        localport = Integer.parseInt(args[i]);
-      }
-      else if(args[i].equals("-mp")){
-        ++i;
-        mode = "Slave";
-        masterport = Integer.parseInt(args[i]);
-      }
-      else if(args[i].equals("-sp")){
-        ++i;
-        mode = "Slave";
-        localport = Integer.parseInt(args[i]);
-      }
-      else {
-        System.out.println("Invalid arguments for ProcessManager.");
-        System.out.println("Usage: no args or ”-c <hostname>” ”-mp <master port>” ”-sp <s port>” ");
-        System.exit(0);
-      }
-    }
-  }
-  
 
   public static void main(String args[]) throws Exception {
 
-    ArgParser(args);
-    
     String commandline;
     BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
     process_table = new RunningProcessTable();
-    slave_table = new SlaveTable();
+
     
-    cmmMM = new CommListener(mode, localport, process_table, slave_table);
-    listenthread = new Thread(cmmMM);
-    listenthread.start();
+    /*
+    ScheduledExecutorService schExec = Executors.newScheduledThreadPool(8);
+    ScheduledFuture<?> schFuture = schExec.scheduleWithFixedDelay(new Runnable() {
+      @Override
+      public void run() {
+        updateProcessList();
+        return;
+      }
+    }, 0, 5, TimeUnit.SECONDS);
+    */
     
-    InetAddress addr = InetAddress.getLocalHost();
-    localhostname = addr.getHostName();
-    
-    if(mode == "Master"){
-      pb = new ProcessBalancer(slave_table, process_table);
-      ScheduledExecutorService schExec = Executors.newScheduledThreadPool(8);
-      ScheduledFuture<?> schFuture = schExec.scheduleWithFixedDelay(pb, 0, 5, TimeUnit.SECONDS);
-    }
-    else{
-      CommSender csender = new CommSender(masterhostname, masterport, "NewSlave: " + localhostname + " " + Integer.toString(localport));
-      csender.run();
-    }
-    
-    System.out.println(localhostname);
     while (true) {
       System.out.print("==> ");
       commandline = in.readLine();
