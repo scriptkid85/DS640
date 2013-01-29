@@ -65,7 +65,7 @@ public class GzipProcess implements MigratableProcess {
    * Note: some zip code is adapted from Chapter I/O in book "Think in Java"
    * */
   public void run() {
-    String objname = pathPrefix + "data/serialize/" + id + ".dat";
+    /*String objname = pathPrefix + "data/serialize/" + id + ".dat";
     File objFile = new File(objname);
     
     // if it resumes running, read object in
@@ -87,7 +87,7 @@ public class GzipProcess implements MigratableProcess {
         System.err.println("Deserialize ClassNotFoundException " + objname);
         e.printStackTrace();
       }
-    }
+    }*/
     
     try {
       GZIPOutputStream gos = new GZIPOutputStream(outFile);
@@ -130,10 +130,9 @@ public class GzipProcess implements MigratableProcess {
     while (suspending)
       ;
 
-    serialize();
   }
   
-  public void serialize() {
+  /*public void serialize() {
     // package up
     // TODO: this path need to be on afs so that multiple processes can access
     String objname = pathPrefix + "data/serialize/" + id + ".dat";
@@ -151,7 +150,7 @@ public class GzipProcess implements MigratableProcess {
       System.err.println(e1);
       e1.printStackTrace();
     }
-  }
+  }*/
 
   @Override
   public String toString() {
@@ -166,7 +165,10 @@ public class GzipProcess implements MigratableProcess {
     Thread.sleep(1000);
     zp.suspend();
 
-    Thread.sleep(1000);
+    Serializer se = new Serializer();
+    String fpath = se.serialize(zp);
+    zp = (GzipProcess) se.deserialize(fpath);
+    //Thread.sleep(1000);
     t = new Thread(zp);
     t.start();
   }

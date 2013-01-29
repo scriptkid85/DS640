@@ -69,7 +69,7 @@ public class EdgeProcess implements MigratableProcess {
    * Note: some zip code is adapted from Chapter I/O in book "Think in Java"
    * */
   public void run() {
-    String objname = pathPrefix + "data/serialize/" + id + ".dat";
+    /*String objname = pathPrefix + "data/serialize/" + id + ".dat";
     File objFile = new File(objname);
 
     // if it resumes running, read object in
@@ -98,7 +98,7 @@ public class EdgeProcess implements MigratableProcess {
         System.err.println("Deserialize ClassNotFoundException " + objname);
         e.printStackTrace();
       }
-    }
+    }*/
 
     try {
       while (!suspending) {
@@ -165,10 +165,9 @@ public class EdgeProcess implements MigratableProcess {
     while (suspending)
       ;
 
-    serialize();
   }
 
-  public void serialize() {
+  /*public void serialize() {
     // package up
     // TODO: this path need to be on afs so that multiple processes can access
     String objname = pathPrefix + "data/serialize/" + id + ".dat";
@@ -184,7 +183,7 @@ public class EdgeProcess implements MigratableProcess {
       System.err.println("Serialize file io exception. id:" + id);
       e1.printStackTrace();
     }
-  }
+  }*/
 
   @Override
   public String toString() {
@@ -200,6 +199,9 @@ public class EdgeProcess implements MigratableProcess {
 
     ep.suspend();
 
+    Serializer se = new Serializer();
+    String fpath = se.serialize(ep);
+    ep = (EdgeProcess) se.deserialize(fpath);
     t = new Thread(ep);
     t.start();
   }
