@@ -2,7 +2,7 @@ import java.io.*;
 
 public class TransactionalFileOutputStream extends OutputStream implements Serializable {
 
-  private RandomAccessFile raf;
+  //private RandomAccessFile raf;
   private File f;
 
   private int curidx;
@@ -13,10 +13,10 @@ public class TransactionalFileOutputStream extends OutputStream implements Seria
       f.delete();
     
     curidx = 0;
-    raf = null;
+    //RandomAccessFile raf = null;
     try {
       f.createNewFile();
-      raf = new RandomAccessFile(f, "rw");
+      //raf = new RandomAccessFile(f, "rw");
     } catch (FileNotFoundException e) {
       System.err.println("Output file not found exception.");
       e.printStackTrace();
@@ -26,14 +26,48 @@ public class TransactionalFileOutputStream extends OutputStream implements Seria
     }
 
   }
+  
+  
 
   @Override
   public void write(int wbyte) throws IOException {
-    raf = new RandomAccessFile(f, "rw");
+    RandomAccessFile raf = new RandomAccessFile(f, "rw");
     raf.seek(curidx);
+    
+    //System.out.println(curidx);
+    
     curidx++;
     raf.write(wbyte);
     raf.close();
   }
+  
+  /*@Override
+  public void write(byte[] b, int len, int off) {
+    try { 
+      RandomAccessFile raf = new RandomAccessFile(f, "rw");
+      raf.seek(curidx);
+      raf.write(b, len, off);
+      curidx += len;
+      raf.close();
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
+  
+  @Override
+  public void write(byte[] b) {
+    try {
+      RandomAccessFile raf = new RandomAccessFile(f, "rw");
+      raf.seek(curidx);
+      raf.write(b);
+      curidx += b.length;
+      raf.close();
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
+  */
 
 }

@@ -20,8 +20,8 @@ import java.util.zip.ZipOutputStream;
 import javax.imageio.ImageIO;
 
 /**
- * Edge detection process, which detects edges on a original image 
- * and output the detected result to a specific position.
+ * Edge detection process, which detects edges on a original image and output the detected result to
+ * a specific position.
  * 
  * @author Zeyuan Li
  * */
@@ -38,8 +38,6 @@ public class EdgeProcess implements MigratableProcess {
   private int picsize;
   private byte[] picbuf;
   private int idxbuf;
-  private BufferedImage imgori;
-  private BufferedImage imgedge;
   private volatile boolean suspending;
 
   public EdgeProcess(String args[]) throws Exception {
@@ -50,10 +48,11 @@ public class EdgeProcess implements MigratableProcess {
 
     // TODO: pathPrefix is a afs prefix for input/output file
     pathPrefix = "";
-    id = args[1] + "_EdgeDetectionProcess";
+    String[] tmp = args[1].split("/");
+    id = tmp[tmp.length - 1] + "_EdgeProcess";
     inFile = new TransactionalFileInputStream(args[1]);
     outFile = new TransactionalFileOutputStream(args[2]);
-    
+
     BufferedImage image = ImageIO.read(new File(args[1]));
     height = image.getHeight();
     width = image.getWidth();
@@ -61,21 +60,23 @@ public class EdgeProcess implements MigratableProcess {
     picbuf = new byte[picsize];
     idxbuf = 0;
   }
-  
+
   // default constructor for transfer processes around nodes and resume process
-  public EdgeProcess() {}
+  public EdgeProcess() {
+  }
 
   /**
    * Note: some zip code is adapted from Chapter I/O in book "Think in Java"
    * */
   public void run() {
+    String objname = pathPrefix + "data/serialize/" + id + ".dat";
+    File objFile = new File(objname);
+
     // if it resumes running, read object in
-    if(inFile == null) {
-      String objname = pathPrefix + "/serialize/" + id + ".dat";
-      File objFile = new File(objname);
+    if (objFile.exists()) {
       try {
         ObjectInputStream in = new ObjectInputStream(new TransactionalFileInputStream(objname));
-        EdgeProcess edp = (EdgeProcess)in.readObject();
+        EdgeProcess edp = (EdgeProcess) in.readObject();
         this.id = edp.id;
         this.inFile = edp.inFile;
         this.outFile = edp.outFile;
@@ -88,8 +89,8 @@ public class EdgeProcess implements MigratableProcess {
         this.picsize = edp.picsize;
         this.picbuf = edp.picbuf;
         this.idxbuf = edp.idxbuf;
-        this.imgori = edp.imgori;
-        this.imgedge = edp.imgedge;
+        // delete serialized file
+        objFile.delete();
       } catch (IOException e) {
         System.err.println("Deserialize IOException " + objname);
         e.printStackTrace();
@@ -98,28 +99,31 @@ public class EdgeProcess implements MigratableProcess {
         e.printStackTrace();
       }
     }
-    
+
     try {
       while (!suspending) {
-        // 1st: finised read img to byte[]. 2nd: edge detection. 3rd: write detected img (in byte[]) to disk
-        if(!readDone) {
+        // 1st: finised read img to byte[]. 2nd: edge detection. 3rd: write detected img (in byte[])
+        // to disk
+        if (!readDone) {
           int c = inFile.read();
-          if(c == -1) {
+          if (c == -1) {
             InputStream in = new ByteArrayInputStream(picbuf);
-            imgori = ImageIO.read(in);
+            BufferedImage imgori = ImageIO.read(in);
             in.close();
-            
-            // Note: following 11 lines are from http://www.tomgibara.com/computer-vision/canny-edge-detector and http://www.mkyong.com/java/how-to-convert-byte-to-bufferedimage-in-java/
+
+            // Note: following 11 lines are from
+            // http://www.tomgibara.com/computer-vision/canny-edge-detector and
+            // http://www.mkyong.com/java/how-to-convert-byte-to-bufferedimage-in-java/
             // detect edge
             CannyEdgeDetector detector = new CannyEdgeDetector();
-            //adjust its parameters as desired
+            // adjust its parameters as desired
             detector.setLowThreshold(0.5f);
             detector.setHighThreshold(1f);
-            //apply it to an image
+            // apply it to an image
             detector.setSourceImage(imgori);
             detector.process();
-            imgedge = detector.getEdgesImage();
-            
+            BufferedImage imgedge = detector.getEdgesImage();
+
             // convert BufferedImage to byte array
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ImageIO.write(imgedge, "jpg", baos);
@@ -127,33 +131,30 @@ public class EdgeProcess implements MigratableProcess {
             picbuf = baos.toByteArray();
             baos.close();
             idxbuf = 0;
-            
+
             readDone = true;
             continue;
           }
-          picbuf[idxbuf++] = (byte)c;
-        }
-        else if(readDone && !writeDone) {
-          // TODO: how to write streaming img 
-          if(idxbuf == picbuf.length) {
+          picbuf[idxbuf++] = (byte) c;
+        } else if (readDone && !writeDone) {
+          // TODO: how to write streaming img
+          if (idxbuf == picbuf.length) {
             System.out.println("[EdgeDectectionProcess]: Detection finished!");
             break;
           }
           outFile.write(picbuf[idxbuf++]);
         }
-        
+
         // Make process take longer
-        /*try {
-          Thread.sleep(2);
-        } catch (InterruptedException e) {
-          // ignore it
-        }*/
+        /*
+         * try { Thread.sleep(2); } catch (InterruptedException e) { // ignore it }
+         */
       }
     } catch (EOFException e) {
       // End of File
     } catch (IOException e) {
       System.out.println("[EdgeDetectionProcess]: Error: " + e);
-    } 
+    }
 
     // wake up suspend() so that we can call suspend() next time.
     suspending = false;
@@ -161,13 +162,20 @@ public class EdgeProcess implements MigratableProcess {
 
   public void suspend() {
     suspending = true;
-    
+    while (suspending)
+      ;
+
+    serialize();
+  }
+
+  public void serialize() {
     // package up
     // TODO: this path need to be on afs so that multiple processes can access
-    String objname = pathPrefix + "/serialize/" + id + ".dat";
+    String objname = pathPrefix + "data/serialize/" + id + ".dat";
     try {
       ObjectOutput s = new ObjectOutputStream(new TransactionalFileOutputStream(objname));
       s.writeObject(this);
+      s.flush();
       s.close();
     } catch (FileNotFoundException e1) {
       System.err.println("Serialize file not found. id:" + id);
@@ -176,25 +184,24 @@ public class EdgeProcess implements MigratableProcess {
       System.err.println("Serialize file io exception. id:" + id);
       e1.printStackTrace();
     }
-    
-    while (suspending) {
-      try {
-        Thread.sleep(100);
-      } catch (InterruptedException e) {
-        // ignore
-      }
-    }
   }
-  
+
   @Override
   public String toString() {
     return id;
   }
-  
+
   public static void main(String[] args) throws Exception {
-    String[] s = {"EdgeP", "data/img.jpg", "data/edgeimg.jpg"};
+    String[] s = { "EdgeProcess", "data/img.jpg", "data/edgeimg.jpg" };
     EdgeProcess ep = new EdgeProcess(s);
-    ep.run();
+    Thread t = new Thread(ep);
+    t.start();
+    Thread.sleep(1000);
+
+    ep.suspend();
+
+    t = new Thread(ep);
+    t.start();
   }
 
 }

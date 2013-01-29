@@ -11,19 +11,18 @@ import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.util.zip.Adler32;
 import java.util.zip.CheckedOutputStream;
+import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 /**
- * Note: BUG in this process! Use GzipProcess instead!
- * 
  * ZipProcess is a implmentation of MigratableProcess, which can zip a input file to a specific
  * output position.
  * 
  * @author Zeyuan Li
  * */
-public class ZipProcess implements MigratableProcess {
-  private static final long serialVersionUID = 1L;
+public class GzipProcess implements MigratableProcess {
+  private static final long serialVersionUID = 3L;
 
   private TransactionalFileInputStream inFile;
 
@@ -38,7 +37,7 @@ public class ZipProcess implements MigratableProcess {
 
   private volatile boolean suspending;
 
-  public ZipProcess(String args[]) throws Exception {
+  public GzipProcess(String args[]) throws Exception {
     if (args.length != 3) {
       // System.out.println(args.length + " " + args[0] +" "+ args[1]);
       System.out.println("usage: ZipProcess <inputFile1> <outputFile>");
@@ -59,7 +58,7 @@ public class ZipProcess implements MigratableProcess {
   /**
    * default constructor for transfer processes around nodes and resume process
    */
-  public ZipProcess() {
+  public GzipProcess() {
   }
 
   /**
@@ -68,16 +67,12 @@ public class ZipProcess implements MigratableProcess {
   public void run() {
     String objname = pathPrefix + "data/serialize/" + id + ".dat";
     File objFile = new File(objname);
-    boolean resume = false;
+    
     // if it resumes running, read object in
     if (objFile.exists()) {
-//      runResume(objname);
-//      return;
-      resume = true;
-      System.out.println(objFile.getName());
       try {
         ObjectInputStream in = new ObjectInputStream(new TransactionalFileInputStream(objname));
-        ZipProcess zp = (ZipProcess) in.readObject();
+        GzipProcess zp = (GzipProcess) in.readObject();
         this.id = zp.id;
         this.inFile = zp.inFile;
         this.outFile = zp.outFile;
@@ -94,31 +89,20 @@ public class ZipProcess implements MigratableProcess {
       }
     }
     
-    CheckedOutputStream csum = new CheckedOutputStream(outFile, new Adler32());
-    ZipOutputStream zos = new ZipOutputStream(csum);
-     //BufferedOutputStream out = new BufferedOutputStream(zos);
-    zos.setComment("A test of Java Zipping");
-    System.out.println("Writing file " + inFile);
-     //BufferedInputStream in = new BufferedInputStream(inFile);
-
     try {
-      //if(!resume)
-        zos.putNextEntry(new ZipEntry(infilename));
-      // zos.putNextEntry(new ZipEntry("test.txt"));
+      GZIPOutputStream gos = new GZIPOutputStream(outFile);
+      
       while (!suspending) {
         // read and write a byte each time
-        //int c = in.read();
         int c = inFile.read();
         if (c == -1) {
           // Checksum valid only after the file has been closed!
           System.out
-                  .println("[ZipProcess]: Write done! Checksum: " + csum.getChecksum().getValue());
+                  .println("[GzipProcess]: Write done! ");
           break;
         }
-//         out.write(c);
-//         out.flush();
-        zos.write(c);
-        zos.flush();
+        gos.write(c);
+        gos.flush();
 
         // Make ZipProcess take longer
         try {
@@ -128,11 +112,8 @@ public class ZipProcess implements MigratableProcess {
         }
       }
       // close the stream
-//       in.close();
-//       out.flush();
-//       out.close();
-      zos.flush();
-      zos.close();
+      gos.flush();
+      gos.close();
     } catch (EOFException e) {
       // End of File
     } catch (IOException e) {
@@ -143,32 +124,16 @@ public class ZipProcess implements MigratableProcess {
     suspending = false;
   }
 
-  public void runResume(String objname) {
-    try {
-      ObjectInputStream in = new ObjectInputStream(new TransactionalFileInputStream(objname));
-      ZipProcess zp = (ZipProcess) in.readObject();
-      this.id = zp.id;
-      this.inFile = zp.inFile;
-      this.outFile = zp.outFile;
-      this.pathPrefix = zp.pathPrefix;
-      this.suspending = zp.suspending;
-      // delete serialized file
-      File objFile = new File(objname);
-      objFile.delete();
-    } catch (IOException e) {
-      System.err.println("Deserialize IOException " + objname);
-      e.printStackTrace();
-    } catch (ClassNotFoundException e) {
-      System.err.println("Deserialize ClassNotFoundException " + objname);
-      e.printStackTrace();
-    }
-  }
 
   public void suspend() {
     suspending = true;
     while (suspending)
       ;
 
+    serialize();
+  }
+  
+  public void serialize() {
     // package up
     // TODO: this path need to be on afs so that multiple processes can access
     String objname = pathPrefix + "data/serialize/" + id + ".dat";
@@ -186,7 +151,6 @@ public class ZipProcess implements MigratableProcess {
       System.err.println(e1);
       e1.printStackTrace();
     }
-
   }
 
   @Override
@@ -195,18 +159,16 @@ public class ZipProcess implements MigratableProcess {
   }
 
   public static void main(String args[]) throws Exception {
-    String[] s = { "ZipProcess", "data/test.txt", "data/res.zip" };
-    // ZipProcess zp = new ZipProcess(s);
-    // zp.run();
-    ZipProcess zp = new ZipProcess(s);
+    String[] s = { "GzipProcess", "data/test.txt", "data/res.gz" };
+    GzipProcess zp = new GzipProcess(s);
     Thread t = new Thread(zp);
     t.start();
-//    Thread.sleep(1000);
-//    zp.suspend();
-//
-//    Thread.sleep(1000);
-//    t = new Thread(zp);
-//    t.start();
+    Thread.sleep(1000);
+    zp.suspend();
+
+    Thread.sleep(1000);
+    t = new Thread(zp);
+    t.start();
   }
 
 }
