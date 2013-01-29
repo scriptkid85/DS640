@@ -12,7 +12,7 @@ public class Serializer {
   public String serialize(MigratableProcess mp) {
     String id = mp.toString();
     String objname = pathPrefix + "data/serialize/" + id + ".dat";
-
+    mp.suspend();
     try {
       ObjectOutput s = new ObjectOutputStream(new TransactionalFileOutputStream(objname));
       s.writeObject(mp);

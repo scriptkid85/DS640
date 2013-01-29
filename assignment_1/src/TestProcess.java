@@ -23,6 +23,7 @@ public class TestProcess implements MigratableProcess {
 
   private static int sleeptime;
 
+  private volatile boolean suspending = false;
   private String id;
 
 
@@ -44,16 +45,20 @@ public class TestProcess implements MigratableProcess {
 
   public void run(){
     System.out.println("Testprocess starts running!");
-    try{
-      Thread.sleep(sleeptime * 1000);
-    }catch(InterruptedException e){
-      
+    System.out.println(sleeptime);
+    while(!suspending && sleeptime > 0){
+      try{
+        Thread.sleep(1000);
+        sleeptime --;
+      }catch(InterruptedException e){
+        
+      }
     }
-    
     
   }
 
   public void suspend() {
+    suspending = true;
     
   }
 
@@ -61,5 +66,19 @@ public class TestProcess implements MigratableProcess {
   public String toString() {
     return id;
   }
+  
+  
+  public static void main(String args[]) throws Exception{
+    TestProcess zp = new TestProcess(args);
+    Thread t = new Thread(zp);
+    t.start();
+    Thread.sleep(2000);
+    zp.suspend();
 
+    Serializer se = new Serializer();
+    String fpath = se.serialize(zp);
+    zp = (TestProcess) se.deserialize(fpath);
+    t = new Thread(zp);
+    t.start();
+  }
 }

@@ -1,6 +1,8 @@
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -12,10 +14,9 @@ public class CommSender implements Runnable{
   private String hostname;
   private int port;
   private PrintWriter out;
-  private BufferedReader in;
   private String sendingcontent;
   private RunningProcessTable rpt;
-  private CommSerializer commser;
+  private OutputStream os;
   
   public CommSender(String hostname, int port, String content){
     this.hostname = hostname;
@@ -38,32 +39,30 @@ public class CommSender implements Runnable{
   
       try {
           ClientSocket = new Socket(hostname, port);
+          os = ClientSocket.getOutputStream();
+
           out = new PrintWriter(ClientSocket.getOutputStream(), true);
-          in = new BufferedReader(new InputStreamReader(ClientSocket.getInputStream()));
+
       } catch (UnknownHostException e) {
-          System.err.println("Don't know about host: master.");
+          System.err.println("CommSender: Don't know about host: master.");
           System.exit(1);
       } catch (IOException e) {
-          System.err.println("Couldn't get I/O for the connection to: master.");
+          System.err.println("CommSender: Couldn't get I/O for the connection to: master.");
           System.exit(1);
       }
   
 
       if (sendingcontent != null) {
-          System.out.println("Sending: " + sendingcontent);
+          System.out.println("CommSender: Sending: " + sendingcontent);
           System.out.println(sendingcontent);
           out.println(sendingcontent);
           out.flush();
           
       }
 
-      if(rpt != null){
-        commser = new CommSerializer(ClientSocket);
-        commser.send(rpt);
-      }
-      
-      try {      
+      try {
         out.close();
+        os.close();
         ClientSocket.close();
       } catch (IOException e) {
         // TODO Auto-generated catch block

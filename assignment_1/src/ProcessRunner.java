@@ -28,17 +28,20 @@ public class ProcessRunner extends Thread{
       Class<?> ProcessClass = Class.forName(cmd);
       Constructor[] ProcessCtor = ProcessClass.getConstructors();
       Object Cmdprocess = ProcessCtor[0].newInstance((Object) command.split(" "));
-      Thread t = new Thread((Runnable) Cmdprocess);
-      if (process_table.containsKey(t))
-        process_table.removeprocess(t);
-      process_table.putprocess(t, cmd + " " + arguments);
+      
+      // TODO: how to decide cmdprocess is a (MigratableProcess) or not???
+      
+      Thread t = new Thread((MigratableProcess)Cmdprocess);
+      if (process_table.containsKey((MigratableProcess)Cmdprocess))
+        process_table.removeprocess((MigratableProcess)Cmdprocess);
+      process_table.putprocess((MigratableProcess)Cmdprocess, cmd + " " + arguments);
       t.start();
       t.join();
-      if(process_table.containsKey(t)){
+      if(process_table.containsKey((MigratableProcess)Cmdprocess)){
         System.out.println("");
-        System.out.println("Process " + process_table.get(t) + "was terminated");
+        System.out.println("Process " + process_table.get((MigratableProcess)Cmdprocess) + "was terminated");
         System.out.print("==> ");
-        process_table.removeprocess(t);
+        process_table.removeprocess((MigratableProcess)Cmdprocess);
       }
       else{
         

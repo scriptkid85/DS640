@@ -1,5 +1,6 @@
 import java.io.Serializable;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -9,19 +10,19 @@ import java.util.Set;
  * @author Guanyu Wang
  * */
 public class RunningProcessTable implements Serializable{
-  private Hashtable<Thread, String> process_table;
+  private Hashtable<MigratableProcess, String> process_table;
   
   public RunningProcessTable(){
-    process_table = new Hashtable<Thread, String>();
+    process_table = new Hashtable<MigratableProcess, String>();
   }
   
-  public synchronized void putprocess(Thread t, String command){
+  public synchronized void putprocess(MigratableProcess t, String command){
     if(process_table.containsKey(t))
       process_table.remove(t);
     process_table.put(t, command);
   }
   
-  public synchronized void removeprocess(Thread t){
+  public synchronized void removeprocess(MigratableProcess t){
     if(process_table.containsKey(t))
       process_table.remove(t);
   }
@@ -30,11 +31,11 @@ public class RunningProcessTable implements Serializable{
     return process_table.size();
   }
   
-  public Set<Thread> keySet(){
+  public Set<MigratableProcess> keySet(){
     return process_table.keySet();
   }
   
-  public String get(Thread t){
+  public String get(MigratableProcess t){
     return process_table.get(t);
   }
   
@@ -42,7 +43,15 @@ public class RunningProcessTable implements Serializable{
     process_table.clear();
   }
   
-  public boolean containsKey(Thread t){
+  public boolean containsKey(MigratableProcess t){
     return process_table.containsKey(t);
+  }
+  
+  public MigratableProcess getOne(){
+    Set<MigratableProcess> s = process_table.keySet();
+    Iterator<MigratableProcess> it = s.iterator();
+    if(it.hasNext())
+      return it.next();
+    return null;
   }
 }

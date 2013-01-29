@@ -1,5 +1,6 @@
 
 public class ProcessBalancer implements Runnable{
+  private boolean debug = false;
   private SlaveChecker schecker;
   private RunningProcessTable rpt;
   private SlaveTable st;
@@ -11,12 +12,16 @@ public class ProcessBalancer implements Runnable{
     schecker = new SlaveChecker(this.st);
     pbstrategist = new ProcessBalancerStrategist(this.st, rpt);
   }
-
+  
+  public void printDebugInfo(String s){
+    if(debug)
+      System.out.println("ProcessBalancer: " + s);
+  }
   @Override
   public void run() {
-    System.out.println("start Balancer");
+    printDebugInfo("start Balancer");
     schecker.run();
-    System.out.println("end slave checking");
+    printDebugInfo("end slave checking");
     pbstrategist.balance();
   }
   

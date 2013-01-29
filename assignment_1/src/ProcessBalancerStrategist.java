@@ -1,5 +1,6 @@
 
 public class ProcessBalancerStrategist {
+  private boolean debug = false;
   private RunningProcessTable rpt;
   private SlaveTable st;
   
@@ -8,12 +9,17 @@ public class ProcessBalancerStrategist {
     this.st = st;
   }
   
+  public void printDebugInfo(String s){
+    if(debug)
+      System.out.println("ProcessBalancerStrategist: " + s);
+  }
+  
   public void balance(){
     
-    System.out.println("Start balancing");
+    printDebugInfo("Start balancing");
     
     if(st.size() == 0){
-      System.out.println("Empty");
+      printDebugInfo("Empty");
       return;
     }
     SlaveTable temptable = st.clone();
@@ -39,7 +45,7 @@ public class ProcessBalancerStrategist {
 //  just for test
     int balancednum = offset;
     
-    System.out.println("finish offsetting: " + balancednum);
+    printDebugInfo("finish offsetting: " + balancednum);
     
     CommMoveProcess  cmp;
     if(balancednum > 0){

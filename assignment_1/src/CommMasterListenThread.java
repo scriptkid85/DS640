@@ -1,5 +1,6 @@
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
@@ -13,8 +14,6 @@ public class CommMasterListenThread extends Thread {
     private RunningProcessTable rpt;
     private SlaveTable st;
     private InetAddress Address;
-
-    private CommSerializer commser;
     private BufferedReader in;
     
 
@@ -22,21 +21,21 @@ public class CommMasterListenThread extends Thread {
       this.socket = socket;
       this.st = st;
       this.rpt = rpt;
-      this.commser = new CommSerializer(socket);
     }
 
     public void run() {
-      System.out.println("Master receving..");
+      System.out.println("CommMasterListen: Master receving..");
       try{
+          InputStream is = socket.getInputStream();
           in = new BufferedReader(
                 new InputStreamReader(
-                socket.getInputStream()));
+                is));
           //read one line from socket
           receivingcontent = in.readLine();
           
-          System.out.println("received: " + receivingcontent);
+          System.out.println("CommMasterListen: received: " + receivingcontent);
           if(receivingcontent != null){
-            System.out.println("enter saving step: " + receivingcontent);
+            System.out.println("CommMasterListen: enter saving step: " + receivingcontent);
             String[] contents = receivingcontent.split(" ");
             System.out.println(contents.length);
             for(String content: contents){
@@ -52,12 +51,12 @@ public class CommMasterListenThread extends Thread {
                 st.putslave(tempkey, 0);
               }
             }
-            commser.receive();
           }
             // TODO: deal with the stream
           in.close();
+          is.close();
           socket.close();
-          System.out.println("Finish receiving");
+          System.out.println("CommMasterListen: Finish receiving");
       } catch (IOException e) {
           e.printStackTrace();
       }

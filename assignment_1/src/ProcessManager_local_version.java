@@ -18,7 +18,7 @@ public class ProcessManager_local_version {
       System.out.flush();
       return;
     }
-    for (Thread t : process_table.keySet()) {
+    for (MigratableProcess t : process_table.keySet()) {
       System.out.println(process_table.get(t));
       System.out.flush();
     }
