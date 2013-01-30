@@ -10,7 +10,7 @@ import java.net.UnknownHostException;
 
 public class SlaveChecker implements Runnable{
   
-  private boolean debug = false;
+  private boolean debug = true;
   
   private SlaveTable st;
   
