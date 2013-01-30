@@ -75,7 +75,7 @@ public class CannyEdgeDetector {
     highThreshold = 7.5f;
     gaussianKernelRadius = 2f;
     gaussianKernelWidth = 16;
-    contrastNormalized = false;
+    contrastNormalized = true;
   }
 
   // accessors
@@ -487,8 +487,11 @@ public class CannyEdgeDetector {
   }
 
   private void thresholdEdges() {
+//    for (int i = 0; i < picsize; i++) {
+//      data[i] = data[i] > 0 ? -1 : 0xff000000;
+//    }
     for (int i = 0; i < picsize; i++) {
-      data[i] = data[i] > 0 ? -1 : 0xff000000;
+      data[i] = data[i] > 0 ? 255 : 0xff000000;
     }
   }
   

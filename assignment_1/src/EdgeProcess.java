@@ -56,7 +56,7 @@ public class EdgeProcess implements MigratableProcess {
     BufferedImage image = ImageIO.read(new File(args[1]));
     height = image.getHeight();
     width = image.getWidth();
-    picsize = height * width;
+    picsize = height * width + 1;
     picbuf = new byte[picsize];
     idxbuf = 0;
   }
@@ -87,7 +87,7 @@ public class EdgeProcess implements MigratableProcess {
             // detect edge
             CannyEdgeDetector detector = new CannyEdgeDetector(); 
             // adjust its parameters as desired
-            detector.setLowThreshold(0.5f);
+            detector.setLowThreshold(0.3f);
             detector.setHighThreshold(1f);
             // apply it to an image
             detector.setSourceImage(imgori);
@@ -114,9 +114,6 @@ public class EdgeProcess implements MigratableProcess {
           }
           outFile.write(picbuf[idxbuf++]);
         }
-
-        // Make process take longer
-        //Thread.sleep(10);
       }
     } catch (EOFException e) {
       // End of File
@@ -125,7 +122,9 @@ public class EdgeProcess implements MigratableProcess {
     } catch (IOException e) {
       System.err.println("[EdgeDetectionProcess]: Error: " + e);
       e.printStackTrace();
-    }
+
+    } 
+
     // wake up suspend() so that we can call suspend() next time.
     suspending = false;
   }
@@ -143,7 +142,7 @@ public class EdgeProcess implements MigratableProcess {
   }
 
   public static void main(String[] args) throws Exception {
-    String[] s = { "EdgeProcess", "data/img.jpg", "data/edgeimg.jpg" };
+    String[] s = { "EdgeProcess", "data/img.jpg", "data/edegimg.jpg" };
     EdgeProcess ep = new EdgeProcess(s);
     Thread t = new Thread(ep);
     t.start();
