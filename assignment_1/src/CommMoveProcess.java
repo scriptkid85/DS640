@@ -6,7 +6,8 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 
-public class CommMoveProcess implements Runnable{
+//public class CommMoveProcess implements Runnable{
+public class CommMoveProcess implements MigratableProcess{
   
   private static Socket ClientSocket;
   private String hostname;
@@ -16,7 +17,7 @@ public class CommMoveProcess implements Runnable{
   private String destname;
   private int destport;
   private int movenum;
-  
+  private volatile boolean suspending;
   
   public CommMoveProcess(String slavename, int slaveport, String destname, int destport, int movenum){
       this.hostname = slavename;
@@ -58,4 +59,13 @@ public class CommMoveProcess implements Runnable{
       e.printStackTrace();
     }
   }
+
+  @Override
+  public void suspend() {
+    // TODO Auto-generated method stub
+    suspending = true;
+    while (suspending)
+      ;
+  }
+  
 }

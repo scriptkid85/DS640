@@ -11,7 +11,7 @@ public class TransactionalFileOutputStream extends OutputStream implements Seria
     f = new File(fpath);
     if(f.exists())
       f.delete();
-    
+     
     curidx = 0;
     //RandomAccessFile raf = null;
     try {
@@ -40,7 +40,7 @@ public class TransactionalFileOutputStream extends OutputStream implements Seria
     raf.write(wbyte);
     raf.close();
   }
-  
+   
   /*@Override
   public void write(byte[] b, int len, int off) {
     try { 

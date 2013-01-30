@@ -1,5 +1,6 @@
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,6 +10,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.util.zip.Adler32;
 import java.util.zip.CheckedOutputStream;
 import java.util.zip.GZIPOutputStream;
@@ -23,7 +26,6 @@ import java.util.zip.ZipOutputStream;
  * */
 public class GzipProcess implements MigratableProcess {
   private static final long serialVersionUID = 3L;
-
   private TransactionalFileInputStream inFile;
 
   private TransactionalFileOutputStream outFile;
@@ -163,13 +165,12 @@ public class GzipProcess implements MigratableProcess {
     Thread t = new Thread(zp);
     t.start();
     Thread.sleep(1000);
-    zp.suspend();
 
     Serializer se = new Serializer();
     String fpath = se.serialize(zp);
     zp = (GzipProcess) se.deserialize(fpath);
     //Thread.sleep(1000);
-    t = new Thread(zp);
+    t = new Thread(zp); 
     t.start();
   }
 

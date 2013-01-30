@@ -5,20 +5,30 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 
+/**
+ * Serializer can do serialization and deserialization
+ * 
+ * @author Zeyuan Li
+ * */
 public class Serializer {
   // TODO: this path need to be on afs so that multiple processes can access
   private String pathPrefix = ""; // afs string
 
   public String serialize(MigratableProcess mp) {
     String id = mp.toString();
+    File dir = new File(pathPrefix + "data/serialize/");
+    if(!dir.exists())
+      dir.mkdir();
     String objname = pathPrefix + "data/serialize/" + id + ".dat";
+    // suspend process
     mp.suspend();
+    
     try {
       ObjectOutput s = new ObjectOutputStream(new TransactionalFileOutputStream(objname));
       s.writeObject(mp);
       s.flush();
       s.close();
-
+ 
     } catch (FileNotFoundException e1) {
       System.err.println("Serialize file not found. id:" + id);
       e1.printStackTrace();

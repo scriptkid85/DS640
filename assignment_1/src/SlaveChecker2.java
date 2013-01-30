@@ -74,7 +74,7 @@ public class SlaveChecker2 implements Runnable{
           
           st.putslave(slavehost, rpt);
           System.out.println("still alive and running process: ");
-          for(Thread process: rpt.keySet()){
+          for(Thread process: rpt.keySet()){ 
             System.out.println(rpt.get(process));
           }
             

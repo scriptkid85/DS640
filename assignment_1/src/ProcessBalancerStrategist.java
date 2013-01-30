@@ -47,7 +47,7 @@ public class ProcessBalancerStrategist {
     
     printDebugInfo("finish offsetting: " + balancednum);
     
-    CommMoveProcess  cmp;
+    CommMoveProcess  cmp; 
     if(balancednum > 0){
       cmp = new CommMoveProcess(maxslave[0], Integer.parseInt(maxslave[1]), minslave[0], Integer.parseInt(minslave[1]), balancednum);
       cmp.run();

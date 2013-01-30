@@ -24,7 +24,7 @@ import javax.imageio.ImageIO;
  * a specific position.
  * 
  * @author Zeyuan Li
- * */
+ * */ 
 public class EdgeProcess implements MigratableProcess {
   private static final long serialVersionUID = 2L;
   private TransactionalFileInputStream inFile;
@@ -115,7 +115,7 @@ public class EdgeProcess implements MigratableProcess {
             // http://www.tomgibara.com/computer-vision/canny-edge-detector and
             // http://www.mkyong.com/java/how-to-convert-byte-to-bufferedimage-in-java/
             // detect edge
-            CannyEdgeDetector detector = new CannyEdgeDetector();
+            CannyEdgeDetector detector = new CannyEdgeDetector(); 
             // adjust its parameters as desired
             detector.setLowThreshold(0.5f);
             detector.setHighThreshold(1f);
@@ -196,8 +196,6 @@ public class EdgeProcess implements MigratableProcess {
     Thread t = new Thread(ep);
     t.start();
     Thread.sleep(1000);
-
-    ep.suspend();
 
     Serializer se = new Serializer();
     String fpath = se.serialize(ep);

@@ -4,7 +4,7 @@ public class TransactionalFileInputStream extends InputStream implements Seriali
 
   //private RandomAccessFile raf;
   private File f;
-
+ 
   private int curidx;
 
   public TransactionalFileInputStream(String fpath) {

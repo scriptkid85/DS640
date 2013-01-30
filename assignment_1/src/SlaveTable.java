@@ -11,7 +11,7 @@ public class SlaveTable implements Serializable{
   public SlaveTable(){
     slave_table = new Hashtable<String[], Integer>();
   }
-  
+   
   public synchronized void putslave(String[] slavehost, int numofProcess){
     if(slave_table.containsKey(slavehost))
       slave_table.remove(slavehost);
