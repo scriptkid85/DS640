@@ -23,7 +23,7 @@ import javax.imageio.ImageIO;
  * Edge detection process, which detects edges on a original image and output the detected result to
  * a specific position.
  * 
- * @author Zeyuan Li
+ * @author Zeyuan Li 
  * */ 
 public class EdgeProcess implements MigratableProcess {
   private static final long serialVersionUID = 2L;

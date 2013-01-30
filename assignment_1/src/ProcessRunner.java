@@ -57,9 +57,9 @@ public class ProcessRunner extends Thread{
           process_table.removeprocess((MigratableProcess)Cmdprocess);
         }
         else{
-          
+          System.out.println("Process " + command + "was moved");
           // TODO: suspend case, no need to output termination info.
-          
+
         }
       } catch (ClassNotFoundException e) {
         System.out.println("");
@@ -79,6 +79,7 @@ public class ProcessRunner extends Thread{
         process_table.putprocess(mp, commandarg);
         t.start();
         t.join();
+        System.out.println("ProcessRunner: finished join");
         if(process_table.containsKey(mp)){
           System.out.println("");
           System.out.println("Process " + process_table.get(mp) + "was terminated");
