@@ -1,7 +1,7 @@
 import java.io.*;
 
 public class TransactionalFileInputStream extends InputStream implements Serializable {
-
+ 
   //private RandomAccessFile raf;
   private File f;
  
@@ -15,7 +15,7 @@ public class TransactionalFileInputStream extends InputStream implements Seriali
       raf = new RandomAccessFile(f, "rw");
     } catch (FileNotFoundException e) {
       System.err.println("Input file not found exception.");
-      e.printStackTrace();
+      e.printStackTrace(); 
     }*/
 
   }
