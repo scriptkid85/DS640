@@ -8,10 +8,15 @@ public class TransactionalFileOutputStream extends OutputStream implements Seria
   private int curidx;
 
   public TransactionalFileOutputStream(String fpath) {
+    String dir = fpath.substring(0, fpath.lastIndexOf("/"));
+    File fdir = new File(dir);
+    if(!fdir.exists())
+      fdir.mkdir();
+    
     f = new File(fpath);
     if(f.exists())
       f.delete();
-     
+    
     curidx = 0;
     //RandomAccessFile raf = null;
     try {
