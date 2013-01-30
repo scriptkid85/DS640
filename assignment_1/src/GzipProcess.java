@@ -108,7 +108,9 @@ public class GzipProcess implements MigratableProcess {
 
         // Make ZipProcess take longer
         try {
-          Thread.sleep(2000);
+
+          Thread.sleep(2000);  
+
         } catch (InterruptedException e) {
           // ignore it
         }
