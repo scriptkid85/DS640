@@ -9,7 +9,7 @@ import java.net.Socket;
 
 
 public class CommSlaveListenThread extends Thread {
-    private boolean debug = false;
+    private boolean debug = true;
   
     private Socket socket = null;
     private String receivingcontent = new String();
@@ -48,7 +48,6 @@ public class CommSlaveListenThread extends Thread {
           os = socket.getOutputStream();
           out = new PrintWriter(os, true);
           if(receivingcontent != null){
-            
             if(receivingcontent.equals("Alive?")){
               printDebugInfo("sending current process number: ");
               out.println(rpt.size());

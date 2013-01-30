@@ -42,7 +42,7 @@ public class ProcessRunner extends Thread{
       String arguments = new String();
       while (stoken.hasMoreTokens())
         arguments += (stoken.nextToken() + " ");
-  
+   
       try {
         Class<?> ProcessClass = Class.forName(cmd);
         Constructor[] ProcessCtor = ProcessClass.getConstructors();

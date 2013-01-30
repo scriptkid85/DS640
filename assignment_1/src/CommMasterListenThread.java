@@ -57,7 +57,7 @@ public class CommMasterListenThread extends Thread {
                 st.putslave(tempkey, 0);
               }
             }
-          }
+          } 
             // TODO: deal with the stream
           in.close();
           is.close();

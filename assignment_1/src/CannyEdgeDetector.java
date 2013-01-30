@@ -78,7 +78,7 @@ public class CannyEdgeDetector {
     contrastNormalized = true;
   }
 
-  // accessors
+  // accessors 
   
   /**
    * The image that provides the luminance data used by this detector to

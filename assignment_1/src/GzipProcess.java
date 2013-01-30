@@ -110,7 +110,7 @@ public class GzipProcess implements MigratableProcess {
         try {
           Thread.sleep(1000);   
         } catch (InterruptedException e) {
-          // ignore it
+          System.out.println("sleep interrupted");
         }
       } 
       // close the stream
@@ -170,7 +170,6 @@ public class GzipProcess implements MigratableProcess {
     GzipProcess zp = new GzipProcess(s);
     Thread t = new Thread(zp);
     t.start();
-    Thread.sleep(1000);
 
     Serializer se = new Serializer();
     String fpath = se.serialize(zp);
@@ -178,6 +177,6 @@ public class GzipProcess implements MigratableProcess {
     //Thread.sleep(1000);
     t = new Thread(zp); 
     t.start();
-  }
+  } 
 
 }

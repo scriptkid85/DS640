@@ -12,7 +12,7 @@ public class TransactionalFileOutputStream extends OutputStream implements Seria
     File fdir = new File(dir);
     if(!fdir.exists())
       fdir.mkdir();
-    
+     
     f = new File(fpath);
     if(f.exists())
       f.delete();

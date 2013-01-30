@@ -64,9 +64,9 @@ public class Serializer {
       }
     }
     else {
-      System.out.println("Serialize failed: no object file avaliable");
+      System.out.println("Deserialize failed: no object file avaliable");
     }
-    if(mp == null)System.out.println("serialized result null");
+    if(mp == null)System.out.println("Deserialized result null");
     return mp;
   }
 
