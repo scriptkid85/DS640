@@ -12,8 +12,6 @@ public class CommMoveProcess implements MigratableProcess{
   private static Socket ClientSocket;
   private String hostname;
   private int port;
-  private PrintWriter out;
-  private BufferedReader in;
   private String destname;
   private int destport;
   private int movenum;
@@ -30,7 +28,7 @@ public class CommMoveProcess implements MigratableProcess{
   public void run(){
     ClientSocket = null;
     PrintWriter out = null;
-
+    BufferedReader in = null;
     try {
         ClientSocket = new Socket(hostname, port);
         out = new PrintWriter(ClientSocket.getOutputStream(), true);

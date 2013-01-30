@@ -9,6 +9,9 @@ import java.net.UnknownHostException;
 
 
 public class CommMasterListenThread extends Thread {
+  
+    private boolean debug = false;
+  
     private Socket socket = null;
     private String receivingcontent = new String();
     private RunningProcessTable rpt;
@@ -20,11 +23,16 @@ public class CommMasterListenThread extends Thread {
     public CommMasterListenThread(Socket socket, SlaveTable st) {
       this.socket = socket;
       this.st = st;
-      this.rpt = rpt;
     }
 
+    public void printDebugInfo(String s){
+      if(debug)
+        System.out.println("CommMasterListen: " + s);
+    }
+    
+    
     public void run() {
-      System.out.println("CommMasterListen: Master receving..");
+      printDebugInfo("Master receving..");
       try{
           InputStream is = socket.getInputStream();
           in = new BufferedReader(
@@ -33,14 +41,12 @@ public class CommMasterListenThread extends Thread {
           //read one line from socket
           receivingcontent = in.readLine();
           
-          System.out.println("CommMasterListen: received: " + receivingcontent);
+          printDebugInfo("received: " + receivingcontent);
           if(receivingcontent != null){
-            System.out.println("CommMasterListen: enter saving step: " + receivingcontent);
+            printDebugInfo("enter saving step: " + receivingcontent);
             String[] contents = receivingcontent.split(" ");
-            System.out.println(contents.length);
             for(String content: contents){
-              System.out.println(content);
-              System.out.flush();
+              printDebugInfo(content);
             }
             
             if(contents.length == 3){
@@ -56,7 +62,7 @@ public class CommMasterListenThread extends Thread {
           in.close();
           is.close();
           socket.close();
-          System.out.println("CommMasterListen: Finish receiving");
+          printDebugInfo("Finish receiving");
       } catch (IOException e) {
           e.printStackTrace();
       }

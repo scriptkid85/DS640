@@ -23,7 +23,7 @@ import javax.imageio.ImageIO;
  * Edge detection process, which detects edges on a original image and output the detected result to
  * a specific position.
  * 
- * @author Zeyuan Li 
+ * @author Zeyuan Li  
  * */ 
 public class EdgeProcess implements MigratableProcess {
   private static final long serialVersionUID = 2L;
@@ -116,7 +116,7 @@ public class EdgeProcess implements MigratableProcess {
         }
 
         // Make process take longer
-        Thread.sleep(100);
+        //Thread.sleep(10);
       }
     } catch (EOFException e) {
       // End of File
@@ -125,11 +125,7 @@ public class EdgeProcess implements MigratableProcess {
     } catch (IOException e) {
       System.err.println("[EdgeDetectionProcess]: Error: " + e);
       e.printStackTrace();
-    } catch (InterruptedException e) {
-      System.err.println("[EdgeDetectionProcess]: Error: " + e);
-      e.printStackTrace();
     }
-
     // wake up suspend() so that we can call suspend() next time.
     suspending = false;
   }
@@ -151,7 +147,7 @@ public class EdgeProcess implements MigratableProcess {
     EdgeProcess ep = new EdgeProcess(s);
     Thread t = new Thread(ep);
     t.start();
-    Thread.sleep(1000);
+//    Thread.sleep(1);
 
     Serializer se = new Serializer();
     String fpath = se.serialize(ep);

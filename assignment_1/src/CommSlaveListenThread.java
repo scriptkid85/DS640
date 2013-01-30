@@ -5,9 +5,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
-import java.net.InetAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 
 public class CommSlaveListenThread extends Thread {
@@ -65,19 +63,19 @@ public class CommSlaveListenThread extends Thread {
             }
             else if(receivingcontent.split("&")[0].equals("Process:")){
               
-              System.out.println("CommSlaveListen: start deserializing");
+              printDebugInfo("CommSlaveListen: start deserializing");
               
               // TODO: DESERIALIZE()
               ser = new Serializer();
               String processes[] = receivingcontent.split("&");
               for(String process: processes){
-                System.out.println("CommSlaveListen: " + process);
+                printDebugInfo("CommSlaveListen: " + process);
               }
               for(int i = 1; i < processes.length; ++i){
                 String serprocess = processes[i];
                 String command = processes[++i];
                 MigratableProcess mp = ser.deserialize(serprocess);
-                System.out.println("CommSlaveListen: finish deserializing: " + command);
+                printDebugInfo("CommSlaveListen: finish deserializing: " + command);
                 
                 try{
                   ProcessRunner pr = new ProcessRunner(mp, command, rpt);
@@ -93,7 +91,7 @@ public class CommSlaveListenThread extends Thread {
               
             }
             else if(receivingcontent.split(" ")[0].equals("Move:")){
-              System.out.println("CommSlaveListen: start to serialize..");
+              printDebugInfo("CommSlaveListen: start to serialize..");
               ser = new Serializer();
               String dest[] = receivingcontent.split(" ");
               String destname = dest[1];
@@ -104,13 +102,13 @@ public class CommSlaveListenThread extends Thread {
                 MigratableProcess mp = rpt.getOne();
                 String args = rpt.get(mp);
                 rpt.removeprocess(mp);
-                System.out.println("CommSlaveListen: start to serialize.." + args);
+                printDebugInfo("CommSlaveListen: start to serialize.." + args);
                 message += ("&" + (ser.serialize(mp) + "&" + args));
                 System.out.println(message);
                 
                 -- movenum;
               }
-              System.out.println("CommSlaveListen: " + message);
+              printDebugInfo("CommSlaveListen: " + message);
               CommSender csender = new CommSender(destname, destport, message);
               csender.run();
             }
