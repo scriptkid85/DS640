@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -77,6 +78,18 @@ public class CommSlaveListenThread extends Thread {
                 String command = processes[++i];
                 MigratableProcess mp = ser.deserialize(serprocess);
                 System.out.println("CommSlaveListen: finish deserializing: " + command);
+                
+                try{
+                  ProcessRunner pr = new ProcessRunner(mp, command, rpt);
+                  Thread t = new Thread(pr);
+                  t.start();
+                }catch (InvocationTargetException e) {
+                  System.out.println("");
+                  System.out.println("Invalid arguments for input command.");
+                } catch (Exception e) {
+                  e.printStackTrace();
+                }
+                
                 rpt.putprocess(mp, command);
                 new Thread(mp).run();
               }
@@ -92,8 +105,10 @@ public class CommSlaveListenThread extends Thread {
               int movenum = Integer.parseInt(dest[3]);
               while(rpt.size() > 0 && movenum > 0){
                 MigratableProcess mp = rpt.getOne();
-                System.out.println("CommSlaveListen: start to serialize.." + rpt.get(mp));
-                message += ("&" + (ser.serialize(mp) + "&" + rpt.get(mp)));
+                String args = rpt.get(mp);
+                System.out.println("CommSlaveListen: start to serialize.." + args);
+                message += ("&" + (ser.serialize(mp) + "&" + args));
+                System.out.println(message);
                 rpt.removeprocess(mp);
                 -- movenum;
               }
