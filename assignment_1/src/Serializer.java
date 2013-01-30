@@ -15,6 +15,7 @@ public class Serializer {
   private String pathPrefix = ""; // afs string
 
   public String serialize(MigratableProcess mp) {
+    System.out.println("Serializer: start");
     String id = mp.toString();
     File dir = new File(pathPrefix + "data/serialize/");
     if(!dir.exists())
@@ -27,7 +28,7 @@ public class Serializer {
       ObjectOutput s = new ObjectOutputStream(new TransactionalFileOutputStream(objname));
       s.writeObject(mp);
       s.flush();
-      s.close();
+      s.close(); 
  
     } catch (FileNotFoundException e1) {
       System.err.println("Serialize file not found. id:" + id);
@@ -60,7 +61,7 @@ public class Serializer {
         e.printStackTrace();
       }
     }
-    
+    if(mp == null)System.out.println("serialized result null");
     return mp;
   }
 

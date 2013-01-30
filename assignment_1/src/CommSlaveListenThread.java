@@ -89,9 +89,6 @@ public class CommSlaveListenThread extends Thread {
                 } catch (Exception e) {
                   e.printStackTrace();
                 }
-                
-                rpt.putprocess(mp, command);
-                new Thread(mp).run();
               }
               
             }
@@ -106,10 +103,11 @@ public class CommSlaveListenThread extends Thread {
               while(rpt.size() > 0 && movenum > 0){
                 MigratableProcess mp = rpt.getOne();
                 String args = rpt.get(mp);
+                rpt.removeprocess(mp);
                 System.out.println("CommSlaveListen: start to serialize.." + args);
                 message += ("&" + (ser.serialize(mp) + "&" + args));
                 System.out.println(message);
-                rpt.removeprocess(mp);
+                
                 -- movenum;
               }
               System.out.println("CommSlaveListen: " + message);

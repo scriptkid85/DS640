@@ -11,12 +11,13 @@ public class ProcessRunner extends Thread{
   
   private String command;
   private RunningProcessTable process_table;
-  private MigratableProcess mp = null;
+  private MigratableProcess mp;
   private String commandarg;
   
   public ProcessRunner(String commandline, RunningProcessTable process_table) throws Exception {
     this.command = commandline;
     this.process_table = process_table;
+    this.mp = null;
   }
   
   
@@ -28,7 +29,7 @@ public class ProcessRunner extends Thread{
   
   public void run() {
     
-    if(mp == null){
+    if(this.mp == null){
     
       StringTokenizer stoken = new StringTokenizer(command);
       String cmd = stoken.nextToken();
