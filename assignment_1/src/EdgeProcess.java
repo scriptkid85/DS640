@@ -69,36 +69,6 @@ public class EdgeProcess implements MigratableProcess {
    * Note: some zip code is adapted from Chapter I/O in book "Think in Java"
    * */
   public void run() {
-    /*String objname = pathPrefix + "data/serialize/" + id + ".dat";
-    File objFile = new File(objname);
-
-    // if it resumes running, read object in
-    if (objFile.exists()) {
-      try {
-        ObjectInputStream in = new ObjectInputStream(new TransactionalFileInputStream(objname));
-        EdgeProcess edp = (EdgeProcess) in.readObject();
-        this.id = edp.id;
-        this.inFile = edp.inFile;
-        this.outFile = edp.outFile;
-        this.pathPrefix = edp.pathPrefix;
-        this.suspending = edp.suspending;
-        this.readDone = edp.readDone;
-        this.writeDone = edp.writeDone;
-        this.height = edp.height;
-        this.width = edp.width;
-        this.picsize = edp.picsize;
-        this.picbuf = edp.picbuf;
-        this.idxbuf = edp.idxbuf;
-        // delete serialized file
-        objFile.delete();
-      } catch (IOException e) {
-        System.err.println("Deserialize IOException " + objname);
-        e.printStackTrace();
-      } catch (ClassNotFoundException e) {
-        System.err.println("Deserialize ClassNotFoundException " + objname);
-        e.printStackTrace();
-      }
-    }*/
 
     try {
       while (!suspending) {
@@ -146,14 +116,18 @@ public class EdgeProcess implements MigratableProcess {
         }
 
         // Make process take longer
-        /*
-         * try { Thread.sleep(2); } catch (InterruptedException e) { // ignore it }
-         */
+        Thread.sleep(100);
       }
     } catch (EOFException e) {
       // End of File
+      System.err.println("[EdgeDetectionProcess]: Error: " + e);
+      e.printStackTrace();
     } catch (IOException e) {
-      System.out.println("[EdgeDetectionProcess]: Error: " + e);
+      System.err.println("[EdgeDetectionProcess]: Error: " + e);
+      e.printStackTrace();
+    } catch (InterruptedException e) {
+      System.err.println("[EdgeDetectionProcess]: Error: " + e);
+      e.printStackTrace();
     }
 
     // wake up suspend() so that we can call suspend() next time.
@@ -166,24 +140,6 @@ public class EdgeProcess implements MigratableProcess {
       ;
 
   }
-
-  /*public void serialize() {
-    // package up
-    // TODO: this path need to be on afs so that multiple processes can access
-    String objname = pathPrefix + "data/serialize/" + id + ".dat";
-    try {
-      ObjectOutput s = new ObjectOutputStream(new TransactionalFileOutputStream(objname));
-      s.writeObject(this);
-      s.flush();
-      s.close();
-    } catch (FileNotFoundException e1) {
-      System.err.println("Serialize file not found. id:" + id);
-      e1.printStackTrace();
-    } catch (IOException e1) {
-      System.err.println("Serialize file io exception. id:" + id);
-      e1.printStackTrace();
-    }
-  }*/
 
   @Override
   public String toString() {
