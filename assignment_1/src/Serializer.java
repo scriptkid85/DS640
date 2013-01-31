@@ -31,7 +31,7 @@ public class Serializer {
     byte[] outbytes = null;
     
     printDebugInfo(" start");
-    
+     
     try {
       out = new ObjectOutputStream(bos);   
       out.writeObject(obj);
