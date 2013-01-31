@@ -18,7 +18,7 @@ import java.util.UUID;
 public class Serializer {
   private String pathPrefix = ""; // afs string
   
-  public byte[] serializeBytes(MigratableProcess mp) {
+  public byte[] serialize(MigratableProcess mp) {
     ByteArrayOutputStream bos = new ByteArrayOutputStream();
     ObjectOutput out = null;
     byte[] outbytes = null;
@@ -46,7 +46,7 @@ public class Serializer {
     return outbytes;
   }
   
-  public MigratableProcess deserializeBytes(byte[] objbytes) {
+  public MigratableProcess deserialize(byte[] objbytes) {
     MigratableProcess mp = null;
     ByteArrayInputStream bis = new ByteArrayInputStream(objbytes);
     ObjectInput in = null;
@@ -74,7 +74,7 @@ public class Serializer {
   }
 
   // TODO: serialize serializable object
-  public String serialize(MigratableProcess mp) {
+  public String serializeFile(MigratableProcess mp) {
     System.out.println("Serializer: start");
     String id = UUID.randomUUID().toString();
     
