@@ -46,25 +46,72 @@ public class CommSlaveListenThread2 extends Thread {
       byte[] command = Arrays.copyOfRange(bytearray, 0, 1);
       byte[] content = Arrays.copyOfRange(bytearray, 1, bytearray.length - 1);
       
-      if(command[0] == Byte.valueOf("0")){
+      if(command[0] == Byte.valueOf("1")){ // means alive check
         String s = new String(content);
-        printDebugInfo("sending current process number: ");
-        out.println(rpt.size());
-        out.flush();
+        printDebugInfo("sending current process: Number is " + rpt.size());
         
         for(MigratableProcess mp: rpt.keySet()){
           printDebugInfo(rpt.get(mp));
         }
         
+        //TODO: SEND serialized RunningProcessTable rpt;
+
         
       }
-      else if(command[0] == Byte.valueOf("1")){
+      else if(command[0] == Byte.valueOf("2")){ //means move instruction
+        String receivingcontent = new String(content);
+        printDebugInfo("received: " + receivingcontent);
+        ser = new Serializer();
+        String dest[] = receivingcontent.split(" ");
+        String destname = dest[1];
+        
+        int destport = Integer.parseInt(dest[2]);
+        int movenum = Integer.parseInt(dest[3]);
+        while(rpt.size() > 0 && movenum > 0){
+          
+          byte[] instruction = new byte[1];
+          instruction[0] = Byte.valueOf("3");
+          MigratableProcess mp = rpt.getOne();
+          
+          String args = rpt.get(mp);
+          Pair<MigratableProcess, String> sendcontent = new Pair<MigratableProcess, String>(mp, args);
+          printDebugInfo("start to serialize.." + args);
+          
+          byte[] serializedprocess;
+          //TODO:  byte[] serializedprocess = ser.serialize(sendcontent);
+                
+          rpt.removeprocess(mp);
+          -- movenum;
+          
+          //TODO: send byte[] to destination
+          printDebugInfo("start to send serialized process");
+          //CommSender csender = new CommSender(destname, destport, message);
+          //csender.run();
+        }
         
       }
-      else if(command[0] == Byte.valueOf("2")){
+      else if(command[0] == Byte.valueOf("3")){
+        printDebugInfo("start deserializing");
         
+        
+        ser = new Serializer();
+        // TODO: Pair<MigratableProcess, String> receivecontent = ser.deserialize(content);         
+        // MigratableProcess mp = receivecontent.getLeft();
+        // String cmdargs = receivecontent.getRight();
+        try{
+          ProcessRunner pr = new ProcessRunner(mp, cmdargs, rpt);
+          Thread t = new Thread(pr);
+          t.start();
+        }catch (InvocationTargetException e) {
+          System.out.println("");
+          System.out.println("Invalid arguments for input command.");
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
       }
+        
       
+     
     }
     
     public void run() {
@@ -82,15 +129,8 @@ public class CommSlaveListenThread2 extends Thread {
           bytearray = baos.toByteArray();
           
           slavehandler(bytearray);
+
           
-          printDebugInfo("received: " + receivingcontent);
-          
-          os = socket.getOutputStream();
-          out = new PrintWriter(os, true);
-          
-          
-          out.close();
-          os.close();
           in.close();
           is.close();
           socket.close();

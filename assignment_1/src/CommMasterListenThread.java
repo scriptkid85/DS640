@@ -16,7 +16,7 @@ public class CommMasterListenThread extends Thread {
     private String receivingcontent = new String();
     private RunningProcessTable rpt;
     private SlaveTable st;
-    private InetAddress Address;
+    private InetAddress Address; 
     private BufferedReader in;
     
 

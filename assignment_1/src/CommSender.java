@@ -17,12 +17,7 @@ public class CommSender implements Runnable{
   private String sendingcontent;
   private RunningProcessTable rpt;
   private OutputStream os;
-<<<<<<< HEAD
-   
-=======
-  
-  // hostname, port, type, info
->>>>>>> 7cbe995e162ab75fe712bf17273ae99f443763d2
+
   public CommSender(String hostname, int port, String content){
     this.hostname = hostname;
     this.sendingcontent = content;

@@ -8,7 +8,7 @@ public class CommListener implements Runnable {
   private RunningProcessTable rpt;
   private SlaveTable st;
   private String mode;
-  private int port;
+  private int port; 
   
   public CommListener(String mode, int port, RunningProcessTable rpt, SlaveTable st) throws Exception{
     if(mode.equals("Master") || mode.equals("Slave")){
