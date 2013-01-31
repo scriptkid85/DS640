@@ -170,6 +170,7 @@ public class GzipProcess implements MigratableProcess {
     GzipProcess zp = new GzipProcess(s);
     Thread t = new Thread(zp);
     t.start();
+    zp.suspend();
 
     Serializer se = new Serializer();
     byte[] res = se.serializeObj(zp);
