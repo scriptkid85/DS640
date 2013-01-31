@@ -116,7 +116,7 @@ public class EdgeProcess implements MigratableProcess {
         }
 
         // Make process take longer
-        Thread.sleep(100);
+        //Thread.sleep(1);
       }
     } catch (EOFException e) {
       // End of File
@@ -125,10 +125,7 @@ public class EdgeProcess implements MigratableProcess {
     } catch (IOException e) {
       System.err.println("[EdgeDetectionProcess]: Error: " + e);
       e.printStackTrace();
-    } catch (InterruptedException e) {
-      System.err.println("[EdgeDetectionProcess]: Error: " + e);
-      e.printStackTrace();
-    }
+    } 
 
     // wake up suspend() so that we can call suspend() next time.
     suspending = false;
