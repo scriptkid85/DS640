@@ -8,7 +8,7 @@ import java.net.UnknownHostException;
 public class ByteSender {
 
   private boolean debug = false;
-  private static Socket ClientSocket;
+  private Socket ClientSocket;
 
   private String hostname;
 

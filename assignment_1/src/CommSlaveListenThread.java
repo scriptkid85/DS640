@@ -84,8 +84,10 @@ public class CommSlaveListenThread extends Thread {
           
           String args = rpt.get(mp);
           Pair<MigratableProcess, String> sendcontent = new Pair<MigratableProcess, String>(mp, args);
-          printDebugInfo("start to serialize.." + args);
           
+          mp.suspend();
+          
+          printDebugInfo("start to serialize.." + args);
           byte[] serializedprocess;
           serializedprocess = ser.serializeObj(sendcontent);
           printDebugInfo("size of seriallized file: " + serializedprocess.length);
@@ -93,7 +95,7 @@ public class CommSlaveListenThread extends Thread {
           -- movenum;
           
           //TODO: send byte[] to destination
-          mp.suspend();
+          
           printDebugInfo("start to send serialized process");
           
           ByteSender bsender = new ByteSender(destname, destport, instruction, serializedprocess);
@@ -122,8 +124,7 @@ public class CommSlaveListenThread extends Thread {
         }
       }
         
-      
-     
+
     }
     
     public void run() {
@@ -142,6 +143,7 @@ public class CommSlaveListenThread extends Thread {
 //            baos.write(buffer, 0, s);
 //            bytearray = baos.toByteArray();   
 //          }
+          
           int cnt = 0;
           for(; (dis.available() != 0); )
           { s = dis.read(buffer);
@@ -151,7 +153,8 @@ public class CommSlaveListenThread extends Thread {
             if(s == 2)break;
           }
           System.out.println("SlaveListen: total num: " + cnt);
-//          for(; (s = dis.read(buffer)) != -1; )
+
+//        for(; (s = dis.read(buffer)) != -1; )
 //          {
 //            System.out.println("SlaveListen: " + s);
 //            baos.write(buffer, 0, s);
@@ -161,7 +164,7 @@ public class CommSlaveListenThread extends Thread {
  
           if(bytearray != null && cnt != 0)slavehandler(bytearray);
           
-          
+          baos.close();
           dis.close();
           is.close();
           socket.close();

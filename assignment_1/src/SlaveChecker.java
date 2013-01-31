@@ -95,42 +95,45 @@ public class SlaveChecker implements Runnable{
       }
       
       printDebugInfo("start receving rpt");
-      try {
-        Thread.sleep(10);
-      } catch (InterruptedException e2) {
-        // TODO Auto-generated catch block
-        e2.printStackTrace();
-      }
+//      try {
+//        Thread.sleep(10);
+//      } catch (InterruptedException e2) {
+//        // TODO Auto-generated catch block
+//        e2.printStackTrace();
+//      }
+      
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       byte buffer[] = new byte[1024];
       int cnt = 0;
       int s;
-      try{
-        for(; (dis.available() != 0); )
-        { s = dis.read(buffer);
-          System.out.println("SlaveChecker: " + s);
-          cnt += s;
-          baos.write(buffer, 0, s);
-        }
-        System.out.println("SlaveChecker: total num: " + cnt);
-      }catch (IOException e) {
-
-        e.printStackTrace();
-      }
-      
-      
-//      try {
-//        for(int s; (s = dis.read(buffer)) != -1; )
-//        {
-//          baos.write(buffer, 0, s);
+//      try{
+//        for(; (dis.available() != 0); )
+//        { s = dis.read(buffer);
+//          System.out.println("SlaveChecker: receive" + s);
 //          cnt += s;
+//          baos.write(buffer, 0, s);
 //        }
-//      } catch (IOException e) {
+//        System.out.println("SlaveChecker:receive total num: " + cnt);
+//      }catch (IOException e) {
 //
 //        e.printStackTrace();
 //      }
       
       
+      try {
+        for(; (s = dis.read(buffer)) != -1; )
+        {
+          baos.write(buffer, 0, s);
+          cnt += s;
+        }
+        baos.close();
+        System.out.println("SlaveChecker:receive total num: " + cnt);
+      } catch (IOException e) {
+
+        e.printStackTrace();
+      }
+      
+
 
       if(baos != null && cnt != 0){
         byte[] receivebytes = baos.toByteArray();
@@ -143,15 +146,23 @@ public class SlaveChecker implements Runnable{
        
         st.putslave(slavehost, temprpt);
         printDebugInfo("finished saving slave in table");
-        try {
-          dis.close();
-          is.close();
-          bsender.close();
-        } catch (IOException e1) {
-          // TODO Auto-generated catch block
-          e1.printStackTrace();
-        }
+
       }
+      try {
+        baos.close();
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+//      try {
+//        baos.close();
+//        dis.close();
+//        is.close();
+//        bsender.close();
+//      } catch (IOException e1) {
+//        // TODO Auto-generated catch block
+//        e1.printStackTrace();
+//      }
     }
     printDebugInfo("finished");
   }

@@ -38,7 +38,7 @@ public class Serializer {
       out.flush();
       outbytes = bos.toByteArray();
       
-      bos.close();
+      bos.close(); 
       out.close(); 
  
     } catch (FileNotFoundException e1) {
