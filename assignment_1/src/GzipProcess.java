@@ -105,7 +105,7 @@ public class GzipProcess implements MigratableProcess {
         }
         gos.write(c);
         gos.flush();
- 
+  
         // Make ZipProcess take longer
         try {
           Thread.sleep(1000);   
