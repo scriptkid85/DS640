@@ -112,7 +112,7 @@ public class GzipProcess implements MigratableProcess {
         } catch (InterruptedException e) {
           // ignore it
         }
-      }
+      } 
       // close the stream
       gos.flush();
       gos.close();
