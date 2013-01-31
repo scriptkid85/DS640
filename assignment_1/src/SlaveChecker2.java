@@ -8,6 +8,17 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+
+
+/* Protocol: type definition
+ * 0: slave -> master, notify new slave
+ * 1: slave -> master, after receiving check message, updating running process table;
+ * 2: master-> slave, check alive
+ * 3: master-> slave, ask to move process
+ * 4: slave -> slave, move process to another slave
+ * 
+ */
+
 public class SlaveChecker2 implements Runnable{
   
   private boolean debug = true;
@@ -60,24 +71,13 @@ public class SlaveChecker2 implements Runnable{
       
       slavehostname = slavehost[0];
       slaveport = Integer.parseInt(slavehost[1]);
+
+      byte[] instruction = new byte[1];
+      instruction[0] = Byte.valueOf("2");
+
+      //TODO: sender checkalive bytearray to slave with slavehostname and slaveport;
+
       
-
-      PrintWriter out = null;
-      try {
-          byte[] instruction = new byte[1];
-          instruction[0] = Byte.valueOf("1");
-
-          //TODO: sender checkalive bytearray to slave with slavehostname and slaveport;
-          
-      } catch (UnknownHostException e) {
-          System.err.println("SlaveChecker: Don't know about slave: " + slavehostname);
-          st.removeslave(slavehost);
-          continue;
-      } catch (IOException e) {
-          System.err.println("SlaveChecker: Couldn't get I/O for the connection to the slave: " + slavehostname);
-          st.removeslave(slavehost);
-          continue;
-      }
       
       try {
         ClientSocket.close();

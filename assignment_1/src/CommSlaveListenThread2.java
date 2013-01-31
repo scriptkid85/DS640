@@ -11,6 +11,16 @@ import java.net.Socket;
 import java.util.Arrays;
 
 
+/* Protocol: type definition
+ * 0: slave -> master, notify new slave
+ * 1: slave -> master, after receiving check message, updating running process table;
+ * 2: master-> slave, check alive
+ * 3: master-> slave, ask to move process
+ * 4: slave -> slave, move process to another slave
+ * 
+ */
+
+
 public class CommSlaveListenThread2 extends Thread {
     private boolean debug = true;
   
@@ -46,7 +56,7 @@ public class CommSlaveListenThread2 extends Thread {
       byte[] command = Arrays.copyOfRange(bytearray, 0, 1);
       byte[] content = Arrays.copyOfRange(bytearray, 1, bytearray.length - 1);
       
-      if(command[0] == Byte.valueOf("1")){ // means alive check
+      if(command[0] == Byte.valueOf("2")){ // means alive check
         String s = new String(content);
         printDebugInfo("sending current process: Number is " + rpt.size());
         
@@ -55,10 +65,16 @@ public class CommSlaveListenThread2 extends Thread {
         }
         
         //TODO: SEND serialized RunningProcessTable rpt;
+        byte[] instruction = new byte[1];
+        instruction[0] = Byte.valueOf("1");
+        
+        //byte[] serializedprocess = ser.serialize(sendcontent);
+        ByteSender bsender = new ByteSender(socket, instruction, serializedrpt);
+
 
         
       }
-      else if(command[0] == Byte.valueOf("2")){ //means move instruction
+      else if(command[0] == Byte.valueOf("3")){ //means move instruction
         String receivingcontent = new String(content);
         printDebugInfo("received: " + receivingcontent);
         ser = new Serializer();
@@ -70,7 +86,7 @@ public class CommSlaveListenThread2 extends Thread {
         while(rpt.size() > 0 && movenum > 0){
           
           byte[] instruction = new byte[1];
-          instruction[0] = Byte.valueOf("3");
+          instruction[0] = Byte.valueOf("4");
           MigratableProcess mp = rpt.getOne();
           
           String args = rpt.get(mp);
@@ -85,12 +101,14 @@ public class CommSlaveListenThread2 extends Thread {
           
           //TODO: send byte[] to destination
           printDebugInfo("start to send serialized process");
+          
+          ByteSender bsender = new ByteSender(destname, destport, instruction, serializedprocess);
           //CommSender csender = new CommSender(destname, destport, message);
           //csender.run();
         }
         
       }
-      else if(command[0] == Byte.valueOf("3")){
+      else if(command[0] == Byte.valueOf("4")){
         printDebugInfo("start deserializing");
         
         

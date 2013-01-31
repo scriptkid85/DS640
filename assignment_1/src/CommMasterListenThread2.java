@@ -12,6 +12,16 @@ import java.net.UnknownHostException;
 import java.util.Arrays;
 
 
+
+/* Protocol: type definition
+ * 0: slave -> master, notify new slave
+ * 1: slave -> master, after receiving check message, updating running process table;
+ * 2: master-> slave, check alive
+ * 3: master-> slave, ask to move process
+ * 4: slave -> slave, move process to another slave
+ * 
+ */
+
 public class CommMasterListenThread2 extends Thread {
   
     private boolean debug = false;
