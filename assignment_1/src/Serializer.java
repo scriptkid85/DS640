@@ -15,6 +15,7 @@ public class Serializer {
   private String pathPrefix = ""; // afs string
 
   public String serialize(MigratableProcess mp) {
+    
     String id = mp.toString();
     File dir = new File(pathPrefix + "data/serialize/");
     if(!dir.exists())
