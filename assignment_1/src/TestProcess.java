@@ -76,8 +76,8 @@ public class TestProcess implements MigratableProcess {
     zp.suspend();
 
     Serializer se = new Serializer();
-    String fpath = se.serialize(zp);
-    zp = (TestProcess) se.deserialize(fpath);
+    byte[] res = se.serializeMP(zp);
+    zp = (TestProcess) se.deserializeMP(res);
     t = new Thread(zp);
     t.start();
   }

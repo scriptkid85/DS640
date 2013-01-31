@@ -149,8 +149,8 @@ public class EdgeProcess implements MigratableProcess {
 //    Thread.sleep(1);
 
     Serializer se = new Serializer();
-    String fpath = se.serialize(ep);
-    ep = (EdgeProcess) se.deserialize(fpath);
+    byte[] res = se.serializeMP(ep);
+    ep = (EdgeProcess) se.deserializeMP(res);
     t = new Thread(ep);
     t.start();
   }

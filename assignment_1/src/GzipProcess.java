@@ -172,8 +172,8 @@ public class GzipProcess implements MigratableProcess {
     t.start();
 
     Serializer se = new Serializer();
-    String fpath = se.serialize(zp);
-    zp = (GzipProcess) se.deserialize(fpath);
+    byte[] res = se.serializeMP(zp);
+    zp = (GzipProcess) se.deserializeMP(res);
     //Thread.sleep(1000);
     t = new Thread(zp); 
     t.start();

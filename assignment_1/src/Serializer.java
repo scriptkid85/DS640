@@ -18,7 +18,32 @@ import java.util.UUID;
 public class Serializer {
   private String pathPrefix = ""; // afs string
   
-  public byte[] serialize(MigratableProcess mp) {
+  public byte[] serializeObj(Object obj) {
+    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    ObjectOutput out = null;
+    byte[] outbytes = null;
+    
+    System.out.println("Byte Serializer: start");
+    
+    try {
+      out = new ObjectOutputStream(bos);   
+      out.writeObject(obj);
+      out.flush();
+      outbytes = bos.toByteArray();
+      
+      out.close(); 
+ 
+    } catch (FileNotFoundException e1) {
+      System.err.println(e1);
+      e1.printStackTrace();
+    } catch (IOException e1) {
+      System.err.println(e1);
+      e1.printStackTrace();
+    }
+    return outbytes;
+  }
+  
+  public byte[] serializeMP(MigratableProcess mp) {
     ByteArrayOutputStream bos = new ByteArrayOutputStream();
     ObjectOutput out = null;
     byte[] outbytes = null;
@@ -46,7 +71,34 @@ public class Serializer {
     return outbytes;
   }
   
-  public MigratableProcess deserialize(byte[] objbytes) {
+  public Object deserializeObj(byte[] objbytes) {
+    Object obj = null;
+    ByteArrayInputStream bis = new ByteArrayInputStream(objbytes);
+    ObjectInput in = null;
+
+    // if it resumes running, read object in
+    if (objbytes != null) {
+      try {
+        in = new ObjectInputStream(bis);
+        obj = in.readObject(); 
+        
+      } catch (IOException e) {
+        System.err.println("Deserialize IOException");
+        e.printStackTrace();
+      } catch (ClassNotFoundException e) {
+        System.err.println("Deserialize ClassNotFoundException ");
+        e.printStackTrace();
+      }
+    }
+    else {
+      System.out.println("Deserialize failed: obj byte array null");
+    }
+    if(obj == null)
+      System.out.println("Deserialized result null");
+    return obj;
+  }
+  
+  public MigratableProcess deserializeMP(byte[] objbytes) {
     MigratableProcess mp = null;
     ByteArrayInputStream bis = new ByteArrayInputStream(objbytes);
     ObjectInput in = null;
@@ -102,7 +154,7 @@ public class Serializer {
     return objname;
   }
 
-  public MigratableProcess deserialize(String objname) {
+  public MigratableProcess deserializeFile(String objname) {
     File objFile = new File(objname);
     MigratableProcess mp = null;
 
@@ -134,7 +186,7 @@ public class Serializer {
    */
   public static void main(String[] args) {
     // TODO Auto-generated method stub
-
+    
   }
 
 }
