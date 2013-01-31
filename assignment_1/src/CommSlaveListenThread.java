@@ -144,15 +144,15 @@ public class CommSlaveListenThread extends Thread {
 //          }
           bytearray = baos.toByteArray();
           
+
+          
+          if(bytearray != null && cnt != 0)slavehandler(bytearray);
+          
           baos.close();
           dis.close();
           is.close();
           socket.close();
           
-          
-          if(bytearray != null && cnt != 0)slavehandler(bytearray);
-          
-
     
       } catch (IOException e) {
           e.printStackTrace();
