@@ -18,10 +18,7 @@ public class ProcessManager {
 
   private static RunningProcessTable process_table;
   private static SlaveTable slave_table;
-  
-  private static SlaveTable2 slave_table2;
-  
-
+ 
   private static Thread listenthread;
   
   private static ProcessBalancer pb;
@@ -47,50 +44,7 @@ public class ProcessManager {
     System.out.print("");
   }
 
-  /*
-  private static void updateProcessList() {
-    RunningProcessTable tempProcesstable = new RunningProcessTable();
-    for (Thread t : process_table.keySet()) {
-      if (!t.isAlive()) {
-        System.out.println("Process " + process_table.get(t) + " was terminated");
-        System.out.flush();
-
-      } else {
-        tempProcesstable.putprocess(t, process_table.get(t));
-      }
-    }
-    process_table.clear();
-    process_table = tempProcesstable;
-  }
-  */
   
-  /*
-  public static void RunprocessinThread(String command) throws ClassNotFoundException, Exception {
-    StringTokenizer stoken = new StringTokenizer(command);
-    String cmd = stoken.nextToken();
-    String arguments = new String();
-    while (stoken.hasMoreTokens())
-      arguments += (stoken.nextToken() + " ");
-
-    try {
-      Class<?> ProcessClass = Class.forName(cmd);
-      Constructor[] ProcessCtor = ProcessClass.getConstructors();
-      Object Cmdprocess = ProcessCtor[0].newInstance((Object) command.split(" "));
-      Thread t = new Thread((Runnable) Cmdprocess);
-      if (process_table.containsKey(t))
-        process_table.removeprocess(t);
-      process_table.putprocess(t, cmd + " " + arguments);
-      t.start();
-    } catch (ClassNotFoundException e) {
-      System.out.println("Cannot find the input command.");
-    } catch (InvocationTargetException e) {
-      System.out.println("Invalid arguments for input command.");
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-
-  }
-*/
 
   public static void Runprocess(String command) throws ClassNotFoundException, Exception {
     
@@ -178,7 +132,6 @@ public class ProcessManager {
     BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
     process_table = new RunningProcessTable();
     slave_table = new SlaveTable();
-    slave_table2 = new SlaveTable2();
     
     CommListener cmmMM = new CommListener(mode, localport, process_table, slave_table);
     listenthread = new Thread(cmmMM);

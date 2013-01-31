@@ -9,6 +9,7 @@ import java.util.StringTokenizer;
  * */
 public class ProcessRunner extends Thread{
   
+  private boolean debug;
   private String command;
   private RunningProcessTable process_table;
   private MigratableProcess mp;
@@ -25,6 +26,11 @@ public class ProcessRunner extends Thread{
     this.mp = mp;
     this.commandarg = command;
     this.process_table = process_table;
+  }
+  
+  public void printDebugInfo(String s){
+    if(debug)
+      System.out.println("PrcessRunner: " + s);
   }
   
   public void run() {
@@ -50,6 +56,7 @@ public class ProcessRunner extends Thread{
         process_table.putprocess((MigratableProcess)Cmdprocess, cmd + " " + arguments);
         t.start();
         t.join();
+        printDebugInfo("finished join");
         if(process_table.containsKey((MigratableProcess)Cmdprocess)){
           System.out.println("");
           System.out.println("Process " + process_table.get((MigratableProcess)Cmdprocess) + "was terminated");
@@ -57,7 +64,7 @@ public class ProcessRunner extends Thread{
           process_table.removeprocess((MigratableProcess)Cmdprocess);
         }
         else{
-          System.out.println("Process " + command + "was moved");
+          System.out.println("Process " + command + " was moved");
           // TODO: suspend case, no need to output termination info.
 
         }
@@ -79,7 +86,7 @@ public class ProcessRunner extends Thread{
         process_table.putprocess(mp, commandarg);
         t.start();
         t.join();
-        System.out.println("ProcessRunner: finished join");
+        printDebugInfo("finished join");
         if(process_table.containsKey(mp)){
           System.out.println("");
           System.out.println("Process " + process_table.get(mp) + "was terminated");
@@ -87,7 +94,7 @@ public class ProcessRunner extends Thread{
           process_table.removeprocess(mp);
         }
         else{
-          System.out.println("Process " + process_table.get(mp) + "was moved");
+          System.out.println("Process " + process_table.get(mp) + " was moved");
           // TODO: suspend case, no need to output termination info.
           
         }
