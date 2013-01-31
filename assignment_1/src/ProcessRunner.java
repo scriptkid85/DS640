@@ -7,7 +7,7 @@ import java.util.StringTokenizer;
  * 
  * @author Guanyu Wang
  * */
-public class ProcessRunner extends Thread{
+public class ProcessRunner extends Thread{ 
   
   private boolean debug;
   private String command;

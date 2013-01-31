@@ -58,7 +58,7 @@ public class ProcessManager {
     } catch (Exception e) {
       e.printStackTrace();
     }
-    
+     
   }
 
   private static void Parser(String command) throws Exception {
