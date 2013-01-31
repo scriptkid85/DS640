@@ -82,7 +82,7 @@ public class SlaveChecker implements Runnable{
       //TODO: sender checkalive bytearray to slave with slavehostname and slaveport;
       ByteSender bsender = new ByteSender(slavehostname, slaveport, instruction, meaninglessmsg);
       bsender.run();
-      
+      //bsender.close();
       InputStream is = null;
       DataInputStream dis = null;;
       

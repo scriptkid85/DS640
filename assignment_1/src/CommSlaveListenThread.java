@@ -65,7 +65,7 @@ public class CommSlaveListenThread extends Thread {
         printDebugInfo("size of seriallized rpt: " + serializedrpt.length);
         ByteSender bsender = new ByteSender(socket, instruction, serializedrpt);
         bsender.run();
-        bsender.close();   
+//        bsender.close();   
       }
       else if(command[0] == Byte.valueOf("3")){ //means move instruction
         String receivingcontent = new String(content);
@@ -100,7 +100,6 @@ public class CommSlaveListenThread extends Thread {
           
           ByteSender bsender = new ByteSender(destname, destport, instruction, serializedprocess);
           bsender.run();
-          bsender.close();
 
         }
         
@@ -116,6 +115,7 @@ public class CommSlaveListenThread extends Thread {
           ProcessRunner pr = new ProcessRunner(mp, cmdargs, rpt);
           Thread t = new Thread(pr);
           t.start();
+          this.socket.close();
         }catch (InvocationTargetException e) {
           System.out.println("");
           System.out.println("Invalid arguments for input command.");

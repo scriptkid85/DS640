@@ -49,7 +49,7 @@ public class CommMasterListenThread extends Thread {
     
     
     public void masterhandler(byte[] bytearray){
-      printDebugInfo("SlaveHandler start");
+      printDebugInfo("start");
       
       byte[] command = Arrays.copyOfRange(bytearray, 0, 1);
       byte[] content = Arrays.copyOfRange(bytearray, 1, bytearray.length);
@@ -69,15 +69,19 @@ public class CommMasterListenThread extends Thread {
     public void run() {
       printDebugInfo("Master receving..");
       try{
+        printDebugInfo("start get input..");
         is = socket.getInputStream();
         DataInputStream dis = new DataInputStream(is);
-
+          
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         byte buffer[] = new byte[1024];
+        int cnt = 0;
         for(int s; (s = dis.read(buffer)) != -1; )
         {
           baos.write(buffer, 0, s);
+          cnt += s;
         }
+        printDebugInfo("Master receving total num: " + cnt);
         bytearray = baos.toByteArray();
         
         masterhandler(bytearray);
