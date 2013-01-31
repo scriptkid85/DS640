@@ -60,7 +60,7 @@ public class SlaveChecker2 implements Runnable{
  
       printDebugInfo("Slave in table: " + slavehost[0] + " " + slavehost[1]);
       if(slavehost.length != 2){
-        printDebugInfo("SlaveChecker: Corrupted slave information in the slave table");
+        printDebugInfo("Corrupted slave information in the slave table");
         try {
           throw new Exception("SlaveChecker: Invalid Arguments");
         } catch (Exception e) {
@@ -74,10 +74,11 @@ public class SlaveChecker2 implements Runnable{
 
       byte[] instruction = new byte[1];
       instruction[0] = Byte.valueOf("2");
-
+      byte[] meaninglessmsg = new byte[1];
+      meaninglessmsg[0] = Byte.valueOf("0");
       //TODO: sender checkalive bytearray to slave with slavehostname and slaveport;
-
-      
+      ByteSender bsender = new ByteSender(slavehostname, slaveport, instruction, meaninglessmsg);
+      bsender.run();
       
       try {
         ClientSocket.close();

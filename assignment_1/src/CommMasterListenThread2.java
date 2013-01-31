@@ -61,7 +61,7 @@ printDebugInfo("SlaveHandler start");
           printDebugInfo(rpt.get(mp));
         }
       }
-      else if(command[0] == Byte.valueOf("1")){ //means
+      else if(command[0] == Byte.valueOf("1")){ //means updating rpt message
         
       }
     }

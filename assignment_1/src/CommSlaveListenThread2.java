@@ -27,16 +27,10 @@ public class CommSlaveListenThread2 extends Thread {
     private Socket socket = null;
     
     private byte[] bytearray;
-    private String receivingcontent = new String();
     private RunningProcessTable rpt;
     private SlaveTable st;
     private Serializer ser;
-
-    
-    private PrintWriter out;
-    private BufferedReader in;
     private InputStream is;
-    private OutputStream os;
     
     public CommSlaveListenThread2(Socket socket, RunningProcessTable rpt, SlaveTable st) {
       this.socket = socket;
@@ -68,9 +62,9 @@ public class CommSlaveListenThread2 extends Thread {
         byte[] instruction = new byte[1];
         instruction[0] = Byte.valueOf("1");
         
-        //byte[] serializedprocess = ser.serialize(sendcontent);
+        //byte[] serializedrpt = ser.serialize(rpt);
         ByteSender bsender = new ByteSender(socket, instruction, serializedrpt);
-
+        bsender.run();
 
         
       }
@@ -80,9 +74,9 @@ public class CommSlaveListenThread2 extends Thread {
         ser = new Serializer();
         String dest[] = receivingcontent.split(" ");
         String destname = dest[1];
-        
         int destport = Integer.parseInt(dest[2]);
         int movenum = Integer.parseInt(dest[3]);
+        
         while(rpt.size() > 0 && movenum > 0){
           
           byte[] instruction = new byte[1];
@@ -103,6 +97,7 @@ public class CommSlaveListenThread2 extends Thread {
           printDebugInfo("start to send serialized process");
           
           ByteSender bsender = new ByteSender(destname, destport, instruction, serializedprocess);
+          bsender.run();
           //CommSender csender = new CommSender(destname, destport, message);
           //csender.run();
         }
@@ -149,7 +144,6 @@ public class CommSlaveListenThread2 extends Thread {
           slavehandler(bytearray);
 
           
-          in.close();
           is.close();
           socket.close();
     
