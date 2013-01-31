@@ -54,15 +54,23 @@ public class CommMasterListenThread extends Thread {
       byte[] command = Arrays.copyOfRange(bytearray, 0, 1);
       byte[] content = Arrays.copyOfRange(bytearray, 1, bytearray.length);
       
-      if(command[0] == Byte.valueOf("0")){ // means new slave
+      if(command[0] == Byte.valueOf("0")){ // means new slave or updated rpt
         ser = new Serializer();
-        String[] slavehost = (String[])ser.deserializeObj(content);
-        printDebugInfo("receiving slave :" + slavehost[0] + " " + slavehost[1]);
+        Pair<String[], RunningProcessTable> serializeslave = (Pair<String[], RunningProcessTable>)ser.deserializeObj(content);
+        String[] slavehost = serializeslave.getLeft();
+        printDebugInfo("received slave: " + slavehost[0] + " " + slavehost[1]);
         
-        RunningProcessTable empty = new RunningProcessTable();
-        st.putslave(slavehost, empty);
-      }
-      else{
+        RunningProcessTable temprpt = serializeslave.getRight();
+        printDebugInfo("received slave's rpt_size : " + temprpt.size());
+        
+        if(st.containsKey(slavehost)){
+          printDebugInfo("receiving old slave update");
+          st.putslave(slavehost, temprpt);//st.resetlifetime_updaterpt(slavehost, temprpt); //same as st.putslave()
+        }
+        else{
+          printDebugInfo("receiving new slave+");
+          st.putslave(slavehost, temprpt); 
+        }
       }
     }
     
@@ -89,7 +97,7 @@ public class CommMasterListenThread extends Thread {
         dis.close();
         is.close();
         socket.close();
-          printDebugInfo("Finish receiving");
+        printDebugInfo("Finish receiving");
       } catch (IOException e) {
           e.printStackTrace();
       }

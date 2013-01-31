@@ -49,25 +49,7 @@ public class CommSlaveListenThread extends Thread {
       byte[] content = Arrays.copyOfRange(bytearray, 1, bytearray.length);
       printDebugInfo("content size: " + content.length);
       
-      if(command[0] == Byte.valueOf("2")){ // means alive check
-        String s = new String(content);
-        printDebugInfo("sending current process: Number is " + rpt.size());
-        
-        for(MigratableProcess mp: rpt.keySet()){
-          printDebugInfo(rpt.get(mp));
-        }
-        
-        //TODO: SEND serialized RunningProcessTable rpt;
-        byte[] instruction = new byte[1];
-        instruction[0] = Byte.valueOf("1");
-        ser = new Serializer();
-        byte[] serializedrpt = ser.serializeObj(rpt);
-        printDebugInfo("size of seriallized rpt: " + serializedrpt.length);
-        ByteSender bsender = new ByteSender(socket, instruction, serializedrpt);
-        bsender.run();
-//        bsender.close();   
-      }
-      else if(command[0] == Byte.valueOf("3")){ //means move instruction
+      if(command[0] == Byte.valueOf("3")){ //means move instruction
         String receivingcontent = new String(content);
         printDebugInfo("received***: " + receivingcontent);
         ser = new Serializer();
@@ -161,13 +143,16 @@ public class CommSlaveListenThread extends Thread {
 //            if(s == 2)break;
 //          }
           bytearray = baos.toByteArray();
- 
-          if(bytearray != null && cnt != 0)slavehandler(bytearray);
           
           baos.close();
           dis.close();
           is.close();
           socket.close();
+          
+          
+          if(bytearray != null && cnt != 0)slavehandler(bytearray);
+          
+
     
       } catch (IOException e) {
           e.printStackTrace();

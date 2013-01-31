@@ -23,7 +23,7 @@ public class ProcessManager {
  
   private static Thread listenthread;
   private static ProcessBalancer pb;
-
+  private static SlaveNotifier sn;
   
   private static int localport;
   private static int masterport;
@@ -147,16 +147,12 @@ public class ProcessManager {
       ScheduledFuture<?> schFuture = schExec.scheduleWithFixedDelay(pb, 0, 5, TimeUnit.SECONDS);
     }
     else{
-      Serializer ser = new Serializer();
-      byte[] instruction = new byte[1];
-      instruction[0] = Byte.valueOf("0");
-      String[] slavehost = new String[2];
-      slavehost[0] = localhostname;
-      slavehost[1] = Integer.toString(localport);
-      byte[] content = ser.serializeObj(slavehost);
-      ByteSender bsender = new ByteSender(masterhostname, masterport, instruction, content);
-      bsender.run();
-      bsender.close();
+      String[] localhost = new String[2];
+      localhost[0] = localhostname;
+      localhost[1] = Integer.toString(localport);
+      sn = new SlaveNotifier(masterhostname, masterport, localhost, process_table);
+      ScheduledExecutorService schExec = Executors.newScheduledThreadPool(8);
+      ScheduledFuture<?> schFuture = schExec.scheduleWithFixedDelay(sn, 0, 5, TimeUnit.SECONDS);
     }
     
     System.out.println(localhostname);
