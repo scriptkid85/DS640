@@ -107,10 +107,15 @@ public class GzipProcess implements MigratableProcess {
         gos.flush();
 
         // Make ZipProcess take longer
+        try {
+          Thread.sleep(1000);  
+        } catch (InterruptedException e) {
+          // ignore it
+        }
+      }
       // close the stream
       gos.flush();
       gos.close();
-      }
     } catch (EOFException e) {
       // End of File
     } catch (IOException e) {
