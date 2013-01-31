@@ -108,7 +108,7 @@ public class GzipProcess implements MigratableProcess {
 
         // Make ZipProcess take longer
         try {
-          Thread.sleep(200);  
+          Thread.sleep(2000);  
         } catch (InterruptedException e) {
           // ignore it
         }
@@ -124,13 +124,19 @@ public class GzipProcess implements MigratableProcess {
 
     // wake up suspend() so that we can call suspend() next time.
     suspending = false;
+    System.out.println("Gzip: run finished.");
+    System.out.flush(); 
   }
 
 
   public void suspend() {
+    System.out.println("Gzip: suspend() is called.");
+    System.out.flush();
     suspending = true;
     while (suspending)
       ;
+    System.out.println("Gzip: suspend() finished.");
+    System.out.flush();
 
   }
   
@@ -155,7 +161,7 @@ public class GzipProcess implements MigratableProcess {
   }*/
 
   @Override
-  public String toString() {
+  public String toString() { 
     return id;
   }
 

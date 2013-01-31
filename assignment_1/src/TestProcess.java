@@ -34,7 +34,7 @@ public class TestProcess implements MigratableProcess {
       System.out.println("usage: TestProcess sleeptime");
       throw new Exception("Invalid Arguments");
     }
-      
+    id = sleeptime[0] + sleeptime[1];
     this.sleeptime = Integer.parseInt(sleeptime[1]);
   }
 
