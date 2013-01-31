@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
+import java.util.UUID;
 
 /**
  * Serializer can do serialization and deserialization
@@ -16,7 +17,8 @@ public class Serializer {
 
   public String serialize(MigratableProcess mp) {
     System.out.println("Serializer: start");
-    String id = mp.toString();
+    String id = UUID.randomUUID().toString();
+    
     File dir = new File(pathPrefix + "data/serialize/");
     if(!dir.exists())
       dir.mkdir();
@@ -60,6 +62,9 @@ public class Serializer {
         System.err.println("Deserialize ClassNotFoundException " + objname);
         e.printStackTrace();
       }
+    }
+    else {
+      System.out.println("Serialize failed: no object file avaliable");
     }
     if(mp == null)System.out.println("serialized result null");
     return mp;
