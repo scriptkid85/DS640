@@ -1,6 +1,6 @@
 
 public class ProcessBalancer implements Runnable{
-  private boolean debug = false;
+  private boolean debug = true;
   private SlaveChecker schecker;
   private RunningProcessTable rpt;
   private SlaveTable st;

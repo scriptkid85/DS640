@@ -17,13 +17,19 @@ import java.util.UUID;
  * */
 public class Serializer {
   private String pathPrefix = ""; // afs string
+  private boolean debug  = false;
+  
+  public void printDebugInfo(String s){
+    if(debug)
+      System.out.println("Serializer: " + s);
+  }
   
   public byte[] serializeObj(Object obj) {
     ByteArrayOutputStream bos = new ByteArrayOutputStream();
     ObjectOutput out = null;
     byte[] outbytes = null;
     
-    System.out.println("Byte Serializer: start");
+    printDebugInfo(" start");
     
     try {
       out = new ObjectOutputStream(bos);   
@@ -48,7 +54,7 @@ public class Serializer {
     ObjectOutput out = null;
     byte[] outbytes = null;
     
-    System.out.println("Byte Serializer: start");
+    printDebugInfo("start");
     
     // suspend process
     mp.suspend();
@@ -127,7 +133,7 @@ public class Serializer {
 
   // TODO: serialize serializable object
   public String serializeFile(MigratableProcess mp) {
-    System.out.println("Serializer: start");
+    printDebugInfo(" start");
     String id = UUID.randomUUID().toString();
     
     File dir = new File(pathPrefix + "data/serialize/");

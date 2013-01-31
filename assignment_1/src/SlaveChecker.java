@@ -1,4 +1,6 @@
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.InputStream;
@@ -7,6 +9,18 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Arrays;
+
+
+
+/* Protocol: type definition
+ * 0: slave -> master, notify new slave
+ * 1: slave -> master, after receiving check message, updating running process table;
+ * 2: master-> slave, check alive
+ * 3: master-> slave, ask to move process
+ * 4: slave -> slave, move process to another slave
+ * 
+ */
 
 public class SlaveChecker implements Runnable{
   
@@ -17,8 +31,8 @@ public class SlaveChecker implements Runnable{
   private String slavehostname;
 
   private int slaveport;
-  
-  private static Socket ClientSocket;
+
+  private Serializer ser;
   
   PrintWriter out;
   BufferedReader in;
@@ -49,7 +63,7 @@ public class SlaveChecker implements Runnable{
  
       printDebugInfo("Slave in table: " + slavehost[0] + " " + slavehost[1]);
       if(slavehost.length != 2){
-        printDebugInfo("SlaveChecker: Corrupted slave information in the slave table");
+        printDebugInfo("Corrupted slave information in the slave table");
         try {
           throw new Exception("SlaveChecker: Invalid Arguments");
         } catch (Exception e) {
@@ -60,54 +74,86 @@ public class SlaveChecker implements Runnable{
       
       slavehostname = slavehost[0];
       slaveport = Integer.parseInt(slavehost[1]);
-      
-      ClientSocket = null;
-      PrintWriter out = null;
-      try {
-          ClientSocket = new Socket(slavehostname, slaveport);
-          
-          OutputStream os = ClientSocket.getOutputStream();
-          out = new PrintWriter(os, true);
-          out.println("Alive?");
-          out.flush();
-          
-          
-          InputStream is = ClientSocket.getInputStream();
-          InputStreamReader isr = new InputStreamReader(is);
-          in = new BufferedReader(isr);
-          
-          receivedcontent = in.readLine();
-          printDebugInfo("SlaveChecker: received " + receivedcontent);
-          printDebugInfo("SlaveChecker: start receving rpt");
- 
-          printDebugInfo("SlaveChecker: finish receving rpt");
-          
-          st.putslave(slavehost, Integer.parseInt(receivedcontent));
-          printDebugInfo("SlaveChecker: still alive and running process is " + Integer.parseInt(receivedcontent));
 
-          in.close();
-          out.close();
-          isr.close();
-          is.close();
-          os.close();
-      } catch (UnknownHostException e) {
-          System.err.println("SlaveChecker: Don't know about slave: " + slavehostname);
-          st.removeslave(slavehost);
-          continue;
-      } catch (IOException e) {
-          System.err.println("SlaveChecker: Couldn't get I/O for the connection to the slave: " + slavehostname);
-          st.removeslave(slavehost);
-          continue;
+      byte[] instruction = new byte[1];
+      instruction[0] = Byte.valueOf("2");
+      byte[] meaninglessmsg = new byte[1];
+      meaninglessmsg[0] = Byte.valueOf("0");
+      //TODO: sender checkalive bytearray to slave with slavehostname and slaveport;
+      ByteSender bsender = new ByteSender(slavehostname, slaveport, instruction, meaninglessmsg);
+      bsender.run();
+      
+      InputStream is = null;
+      DataInputStream dis = null;;
+      
+      try {
+        is = bsender.socket().getInputStream();
+        dis = new DataInputStream(is);
+      } catch (IOException e1) {
+        // TODO Auto-generated catch block
+        e1.printStackTrace();
       }
       
+      printDebugInfo("start receving rpt");
       try {
-        ClientSocket.close();
-      } catch (IOException e) {
+        Thread.sleep(10);
+      } catch (InterruptedException e2) {
         // TODO Auto-generated catch block
+        e2.printStackTrace();
+      }
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      byte buffer[] = new byte[1024];
+      int cnt = 0;
+      int s;
+      try{
+        for(; (dis.available() != 0); )
+        { s = dis.read(buffer);
+          System.out.println("SlaveChecker: " + s);
+          cnt += s;
+          baos.write(buffer, 0, s);
+        }
+        System.out.println("SlaveChecker: total num: " + cnt);
+      }catch (IOException e) {
+
         e.printStackTrace();
       }
       
+      
+//      try {
+//        for(int s; (s = dis.read(buffer)) != -1; )
+//        {
+//          baos.write(buffer, 0, s);
+//          cnt += s;
+//        }
+//      } catch (IOException e) {
+//
+//        e.printStackTrace();
+//      }
+      
+      
+
+      if(baos != null && cnt != 0){
+        byte[] receivebytes = baos.toByteArray();
+        byte[] command = Arrays.copyOfRange(receivebytes, 0, 1);
+        byte[] content = Arrays.copyOfRange(receivebytes, 1, receivebytes.length);
+        ser = new Serializer();
+        RunningProcessTable temprpt = (RunningProcessTable)ser.deserializeObj(content);
+        printDebugInfo("finish receving rpt");
+        printDebugInfo("received rptsize: " + temprpt.size());
+       
+        st.putslave(slavehost, temprpt);
+        printDebugInfo("finished saving slave in table");
+        try {
+          dis.close();
+          is.close();
+          bsender.close();
+        } catch (IOException e1) {
+          // TODO Auto-generated catch block
+          e1.printStackTrace();
+        }
+      }
     }
+    printDebugInfo("finished");
   }
 
 }

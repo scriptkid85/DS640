@@ -7,33 +7,23 @@ import java.net.UnknownHostException;
 
 
 //public class CommMoveProcess implements Runnable{
-public class CommMoveProcess implements MigratableProcess{
+public class CommMoveProcess_backup implements MigratableProcess{
   
-  private boolean debug = true;
-  private Socket ClientSocket;
+  private static Socket ClientSocket;
   private String hostname;
   private int port;
   private String destname;
   private int destport;
   private int movenum;
-  private String slavename;
-  private int slaveport;
   private volatile boolean suspending;
   
-  public CommMoveProcess(String slavename, int slaveport, String destname, int destport, int movenum){
+  public CommMoveProcess_backup(String slavename, int slaveport, String destname, int destport, int movenum){
       this.hostname = slavename;
       this.port = slaveport;
       this.destname = destname;
       this.destport = destport;
       this.movenum = movenum;
-      this.slavename = slavename;
-      this.slaveport = slaveport;
     }
-  
-  public void printDebugInfo(String s){
-    if(debug)
-      System.out.println("CommMoveProcess: " + s);
-  }
   
   public void run(){
     ClientSocket = null;
@@ -53,14 +43,10 @@ public class CommMoveProcess implements MigratableProcess{
 
     String sendingcontent = new String("Move: " + destname + " " + destport + " " + movenum);
     if (sendingcontent != null) {
-      printDebugInfo("Sending: " + sendingcontent);
-      printDebugInfo(sendingcontent);
-      byte[] sendingbytes = sendingcontent.getBytes();
-      byte[] instruction = new byte[1];
-      instruction[0] = Byte.valueOf("3");
-      ByteSender bsender = new ByteSender(slavename, slaveport, instruction, sendingbytes);
-      bsender.run();
-      bsender.close();
+        System.out.println("Sending: " + sendingcontent);
+        System.out.println(sendingcontent);
+        out.println(sendingcontent);
+        out.flush();
     }
 
     out.close();

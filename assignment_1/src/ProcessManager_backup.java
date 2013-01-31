@@ -7,8 +7,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import sun.print.resources.serviceui;
-
 
 /**
  * ProcessManager is a process management tool which support Migratable process and load
@@ -16,12 +14,13 @@ import sun.print.resources.serviceui;
  * 
  * @author Guanyu Wang
  * */ 
-public class ProcessManager {
+public class ProcessManager_backup {
 
   private static RunningProcessTable process_table;
-  private static SlaveTable slave_table;
+  private static SlaveTable_backup slave_table;
  
   private static Thread listenthread;
+  
   private static ProcessBalancer pb;
 
   
@@ -132,7 +131,7 @@ public class ProcessManager {
     String commandline;
     BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
     process_table = new RunningProcessTable();
-    slave_table = new SlaveTable();
+    slave_table = new SlaveTable_backup();
     
     CommListener cmmMM = new CommListener(mode, localport, process_table, slave_table);
     listenthread = new Thread(cmmMM);
@@ -147,16 +146,8 @@ public class ProcessManager {
       ScheduledFuture<?> schFuture = schExec.scheduleWithFixedDelay(pb, 0, 5, TimeUnit.SECONDS);
     }
     else{
-      Serializer ser = new Serializer();
-      byte[] instruction = new byte[1];
-      instruction[0] = Byte.valueOf("0");
-      String[] slavehost = new String[2];
-      slavehost[0] = localhostname;
-      slavehost[1] = Integer.toString(localport);
-      byte[] content = ser.serializeObj(slavehost);
-      ByteSender bsender = new ByteSender(masterhostname, masterport, instruction, content);
-      bsender.run();
-      bsender.close();
+      CommSender csender = new CommSender(masterhostname, masterport, "NewSlave: " + localhostname + " " + Integer.toString(localport), process_table);
+      csender.run();
     }
     
     System.out.println(localhostname);

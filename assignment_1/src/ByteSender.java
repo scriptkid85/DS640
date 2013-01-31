@@ -7,41 +7,44 @@ import java.net.UnknownHostException;
 
 public class ByteSender {
 
+  private boolean debug = false;
   private static Socket ClientSocket;
 
   private String hostname;
 
   private int port;
-  
-  private Socket socket;
 
   private OutputStream os;
+  DataOutputStream out;
 
   private byte[] msg;
 
   private byte[] type;
 
   // hostname, port, type, info
-  public ByteSender(String hostname, int port, byte[] msg, byte[] type) {
+  public ByteSender(String hostname, int port, byte[] type, byte[] msg) {
     this.hostname = hostname;
     this.msg = msg;
     this.type = type;
     this.port = port;
-    this.socket = null;
+    this.ClientSocket = null;
   }
 
-  public ByteSender(Socket socket, byte[] msg, byte type[], RunningProcessTable rpt) {
-    this.socket = socket;
+  public ByteSender(Socket socket, byte type[], byte[] msg) {
+    this.ClientSocket = socket;
     this.msg = msg;
     this.type = type;
   }
 
+  public void printDebugInfo(String s){
+    if(debug)
+      System.out.println("ByteSender: " + s);
+  }
+  
   public void run() {
-    ClientSocket = null;
-    // PrintWriter out = null;
-    DataOutputStream out = null;
-    if(socket != null){
-      ClientSocket = socket;
+
+    out = null;
+    if(ClientSocket != null){
       try {
         os = ClientSocket.getOutputStream();
         out = new DataOutputStream(os);
@@ -57,36 +60,47 @@ public class ByteSender {
         out = new DataOutputStream(os);
   
       } catch (UnknownHostException e) {
-        System.err.println("ByteSender: Don't know about host: master.");
+        System.err.println("ByteSender: Don't know about host: " + hostname);
         System.exit(1);
       } catch (IOException e) {
-        System.err.println("ByteSender: Couldn't get I/O for the connection to: master.");
+        System.err.println("ByteSender: Couldn't get I/O for the connection to:" + hostname);
         System.exit(1);
       }
     }
     if (msg != null && type != null) {
-      System.out.println("ByteSender: Sending: ");
+      printDebugInfo("Sending: ");
       byte[] sendingbarray = new byte[type.length + msg.length];
       System.arraycopy(type, 0, sendingbarray, 0, type.length);
       System.arraycopy(msg, 0, sendingbarray, type.length, msg.length);
       // write type
+      
       try {
 
-        for (byte b : sendingbarray)
+        for (byte b : sendingbarray){
           out.writeByte(b);
-
-        out.flush();
+          out.flush();
+        }
       } catch (IOException e) {
         System.err.println(e);
         e.printStackTrace();
       }
-
     }
-
+    printDebugInfo("finished");
+  }
+  
+  public Socket socket(){
+    if(ClientSocket == null){
+      printDebugInfo("null socket");
+    }
+    return this.ClientSocket;
+  }
+  
+  public void close(){
     try {
       out.close();
       os.close();
       ClientSocket.close();
+      printDebugInfo("close socket");
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();

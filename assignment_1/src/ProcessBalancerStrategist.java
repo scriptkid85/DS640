@@ -27,7 +27,7 @@ public class ProcessBalancerStrategist {
     int tempnum, maxnum = -1, minnum = Integer.MAX_VALUE;
     String[] maxslave = null, minslave = null;
     for(String[] slavehost: temptable.keySet()){
-      tempnum = temptable.get(slavehost);
+      tempnum = temptable.get(slavehost).size();
       if(tempnum > maxnum){
         maxnum = tempnum;
         maxslave = slavehost;

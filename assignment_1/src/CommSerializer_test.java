@@ -20,10 +20,10 @@ public class CommSerializer_test implements Runnable{
 
 
   public RunningProcessTable receive(InputStream is){
-    RunningProcessTable temprpt = new RunningProcessTable();
+    Object temprpt = new RunningProcessTable();
     try {
       ObjectInputStream ois = new ObjectInputStream(is);
-      temprpt = (RunningProcessTable)ois.readObject();
+      temprpt = (Object)ois.readObject();
       
       ois.close();
       ois.close();
