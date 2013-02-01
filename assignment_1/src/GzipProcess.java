@@ -108,7 +108,7 @@ public class GzipProcess implements MigratableProcess {
   
         // Make ZipProcess take longer
         try {
-          Thread.sleep(1000);   
+          Thread.sleep(100);   
         } catch (InterruptedException e) {
           System.out.println("sleep interrupted");
         }
@@ -170,6 +170,7 @@ public class GzipProcess implements MigratableProcess {
     GzipProcess zp = new GzipProcess(s);
     Thread t = new Thread(zp);
     t.start();
+    zp.suspend();
 
     Serializer se = new Serializer();
     byte[] res = se.serializeObj(zp);

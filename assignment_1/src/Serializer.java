@@ -38,6 +38,7 @@ public class Serializer {
       out.flush();
       outbytes = bos.toByteArray();
       
+      bos.close();
       out.close(); 
  
     } catch (FileNotFoundException e1) {
@@ -66,6 +67,7 @@ public class Serializer {
       out.flush();
       outbytes = bos.toByteArray();
       
+      bos.close();
       out.close(); 
  
     } catch (FileNotFoundException e1) {
@@ -102,6 +104,13 @@ public class Serializer {
     }
     if(obj == null)
       System.out.println("Deserialized result null");
+    
+    try {
+      bis.close();
+      in.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
     return obj;
   }
   
@@ -129,6 +138,13 @@ public class Serializer {
     }
     if(mp == null)
       System.out.println("Deserialized result null");
+    
+    try {
+      bis.close();
+      in.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
     return mp;
   }
 
