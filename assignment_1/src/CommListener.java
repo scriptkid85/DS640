@@ -1,6 +1,14 @@
 import java.io.IOException;
 import java.net.ServerSocket;
 
+/* Protocol: type definition
+ * 0: slave -> master, notify new slave or update rpt
+ * 1: slave -> master, ask for ps
+ * 2: master-> slave, return ps
+ * 3: master-> slave, ask to move process
+ * 4: slave -> slave, move process to another slave
+ * 
+ */
 
 public class CommListener implements Runnable {
 

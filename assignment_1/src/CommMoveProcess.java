@@ -9,7 +9,7 @@ import java.net.UnknownHostException;
 //public class CommMoveProcess implements Runnable{
 public class CommMoveProcess implements MigratableProcess{
   
-  private boolean debug = true;
+  private boolean debug = false;
   private Socket ClientSocket;
   private String hostname;
   private int port;

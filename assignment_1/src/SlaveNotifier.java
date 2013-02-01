@@ -1,6 +1,6 @@
 
 public class SlaveNotifier implements Runnable{
-  private boolean debug = true;
+  private boolean debug = false;
 
   private RunningProcessTable rpt;
   private String[] localhost;

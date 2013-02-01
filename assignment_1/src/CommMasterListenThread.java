@@ -14,17 +14,18 @@ import java.util.Arrays;
 
 
 /* Protocol: type definition
- * 0: slave -> master, notify new slave
- * 1: slave -> master, after receiving check message, updating running process table;
- * 2: master-> slave, check alive
+ * 0: slave -> master, notify new slave or update rpt
+ * 1: slave -> master, ask for ps
+ * 2: master-> slave, return ps
  * 3: master-> slave, ask to move process
  * 4: slave -> slave, move process to another slave
  * 
  */
 
+
 public class CommMasterListenThread extends Thread {
   
-    private boolean debug = true;
+    private boolean debug = false;
   
     private Socket socket = null;
     private String receivingcontent = new String();
@@ -71,6 +72,23 @@ public class CommMasterListenThread extends Thread {
           printDebugInfo("receiving new slave+");
           st.putslave(slavehost, temprpt); 
         }
+      }
+      else if(command[0] == Byte.valueOf("1")){ //receive global ps request
+        Serializer ser = new Serializer();
+        byte[] instruction = new byte[1];
+        String remoteps = new String(content);
+        String remotename = remoteps.split(" ")[0];
+        int remoteport = Integer.parseInt(remoteps.split(" ")[1]);
+        printDebugInfo("received slave: " + remotename + remoteport + "'s ps request");
+        
+        instruction[0] = Byte.valueOf("2");
+        
+        byte[] sendst = ser.serializeObj(st);
+        
+        ByteSender bsender = new ByteSender(remotename, remoteport, instruction, sendst);
+        bsender.run();
+        printDebugInfo("finished sending gps");
+        bsender.close();
       }
     }
     

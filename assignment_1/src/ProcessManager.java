@@ -32,7 +32,7 @@ public class ProcessManager {
   private static String masterhostname = new String();
   private static String localhostname;
   
-  public static void Ps() {
+  public static void LocalPs() {
     if (process_table.size() < 1) {
       System.out.println("no running processes");
       System.out.flush();
@@ -42,7 +42,47 @@ public class ProcessManager {
       System.out.println(process_table.get(t));
       System.out.flush();
     }
-    System.out.print("");
+  }
+  
+  public static void GlobalPs() {
+    if (process_table.size() < 1) {
+      System.out.println("no running processes");
+      System.out.flush();
+    }
+    else{
+      System.out.println("local processes:");
+    }
+    for (MigratableProcess t : process_table.keySet()) {
+      System.out.println(process_table.get(t));
+      System.out.flush();
+    }
+    System.out.println("global processes:");
+    if(mode == "Slave"){
+      
+      Serializer ser = new Serializer();
+      byte[] instruction = new byte[1];
+      instruction[0] = Byte.valueOf("1");
+      
+      byte[] content = (localhostname + " " + localport).getBytes();
+      System.out.println("send gps request to: "  + masterhostname + masterport);
+      ByteSender bsender = new ByteSender(masterhostname, masterport, instruction, content);
+      bsender.run();
+      bsender.close();
+    }
+    else{
+      for(String slavehost: slave_table.keySet()){
+        System.out.println("Slave name and port number: " + slavehost);
+        RunningProcessTable temprpt = slave_table.get(slavehost.split(" "));
+        if(temprpt.size() < 1){
+          System.out.println("no running processes");
+        }
+        else{
+          for(MigratableProcess mp: temprpt.keySet()){
+            System.out.println(temprpt.get(mp));
+          }
+        }
+      }
+    }
   }
 
   
@@ -69,8 +109,12 @@ public class ProcessManager {
     if (stoken.hasMoreTokens()) {
       cmd = stoken.nextToken();
       if (cmd.equals("ps") && !stoken.hasMoreElements()) {
-        Ps();
-      } else if (cmd.equals("quit") && !stoken.hasMoreElements()) {
+        LocalPs();
+        
+      } 
+      else if (cmd.equals("gps") && !stoken.hasMoreElements()) {
+        GlobalPs();
+      }else if (cmd.equals("quit") && !stoken.hasMoreElements()) {
         System.exit(0);
       } else {
         Runprocess(command);

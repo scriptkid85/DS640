@@ -12,9 +12,9 @@ import java.util.Arrays;
 
 
 /* Protocol: type definition
- * 0: slave -> master, notify new slave
- * 1: slave -> master, after receiving check message, updating running process table;
- * 2: master-> slave, check alivez
+ * 0: slave -> master, notify new slave or update rpt
+ * 1: slave -> master, ask for ps
+ * 2: master-> slave, return ps
  * 3: master-> slave, ask to move process
  * 4: slave -> slave, move process to another slave
  * 
@@ -22,7 +22,7 @@ import java.util.Arrays;
 
 
 public class CommSlaveListenThread extends Thread {
-    private boolean debug = true;
+    private boolean debug = false;
   
     private Socket socket = null;
     private RunningProcessTable rpt;
@@ -49,7 +49,24 @@ public class CommSlaveListenThread extends Thread {
       byte[] content = Arrays.copyOfRange(bytearray, 1, bytearray.length);
       printDebugInfo("content size: " + content.length);
       
-      if(command[0] == Byte.valueOf("3")){ //means move instruction
+      if(command[0] == Byte.valueOf("2")){ //receive ps and print
+        System.out.println("global processes:");
+        ser = new Serializer();
+        SlaveTable remotest = (SlaveTable)ser.deserializeObj(content);
+        for(String slavehost: remotest.keySet()){
+          System.out.println("Slave name and port number: " + slavehost);
+          RunningProcessTable temprpt = remotest.get(slavehost.split(" "));
+          if(temprpt.size() < 1){
+            System.out.println("no running processes");
+          }
+          else{
+            for(MigratableProcess mp: temprpt.keySet()){
+              System.out.println(temprpt.get(mp));
+            }
+          }
+        }
+      }
+      else if(command[0] == Byte.valueOf("3")){ //means move instruction
         String receivingcontent = new String(content);
         printDebugInfo("received***: " + receivingcontent);
         ser = new Serializer();
@@ -66,17 +83,14 @@ public class CommSlaveListenThread extends Thread {
           
           String args = rpt.get(mp);
           Pair<MigratableProcess, String> sendcontent = new Pair<MigratableProcess, String>(mp, args);
-          
+          rpt.removeprocess(mp);
           mp.suspend();
-          
           printDebugInfo("start to serialize.." + args);
           byte[] serializedprocess;
           serializedprocess = ser.serializeObj(sendcontent);
           printDebugInfo("size of seriallized file: " + serializedprocess.length);
-          rpt.removeprocess(mp);
-          -- movenum;
           
-          //TODO: send byte[] to destination
+          -- movenum;
           
           printDebugInfo("start to send serialized process");
           
@@ -129,12 +143,12 @@ public class CommSlaveListenThread extends Thread {
           int cnt = 0;
           for(; (dis.available() != 0); )
           { s = dis.read(buffer);
-            System.out.println("SlaveListen: " + s);
+            printDebugInfo("SlaveListen: " + s);
             cnt += s;
             baos.write(buffer, 0, s);
             if(s == 2)break;
           }
-          System.out.println("SlaveListen: total num: " + cnt);
+          printDebugInfo("SlaveListen: total num: " + cnt);
 
 //        for(; (s = dis.read(buffer)) != -1; )
 //          {
@@ -147,11 +161,11 @@ public class CommSlaveListenThread extends Thread {
 
           
           if(bytearray != null && cnt != 0)slavehandler(bytearray);
-          
-          baos.close();
-          dis.close();
-          is.close();
-          socket.close();
+//          
+//          baos.close();
+//          dis.close();
+//          is.close();
+//          socket.close();
           
     
       } catch (IOException e) {

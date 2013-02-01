@@ -24,7 +24,7 @@ import java.util.Arrays;
 
 public class SlaveChecker implements Runnable{
   
-  private boolean debug = true;
+  private boolean debug = false;
   
   private int die_threshold = 2;
   private SlaveTable st;

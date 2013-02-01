@@ -9,7 +9,7 @@ import java.util.StringTokenizer;
  * */
 public class ProcessRunner extends Thread{ 
   
-  private boolean debug;
+  private boolean debug = false;
   private String command;
   private RunningProcessTable process_table;
   private MigratableProcess mp;
@@ -65,6 +65,7 @@ public class ProcessRunner extends Thread{
         }
         else{
           System.out.println("Process " + command + " was moved");
+          System.out.println("==>");
           // TODO: suspend case, no need to output termination info.
 
         }
