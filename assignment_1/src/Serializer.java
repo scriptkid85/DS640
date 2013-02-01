@@ -7,6 +7,7 @@ import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.Socket;
 import java.util.UUID;
 
@@ -18,7 +19,7 @@ import java.util.UUID;
 public class Serializer {
   private String pathPrefix = ""; // afs string
   
-  public byte[] serializeObj(Object obj) {
+  public byte[] serializeObj(Serializable obj) {
     ByteArrayOutputStream bos = new ByteArrayOutputStream();
     ObjectOutput out = null;
     byte[] outbytes = null;
@@ -72,7 +73,7 @@ public class Serializer {
   }
   
   public Object deserializeObj(byte[] objbytes) {
-    Object obj = null;
+    Serializable obj = null;
     ByteArrayInputStream bis = new ByteArrayInputStream(objbytes);
     ObjectInput in = null;
 
@@ -80,7 +81,7 @@ public class Serializer {
     if (objbytes != null) {
       try {
         in = new ObjectInputStream(bis);
-        obj = in.readObject(); 
+        obj = (Serializable)in.readObject(); 
         
       } catch (IOException e) {
         System.err.println("Deserialize IOException");
