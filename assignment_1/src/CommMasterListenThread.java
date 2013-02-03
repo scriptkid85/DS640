@@ -1,26 +1,26 @@
-import java.io.BufferedReader;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.net.InetAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.Arrays;
 
 
 
-/* Protocol: type definition
+/**
+ * CommMasterListenThread: MasterListenThread class, which handles the incoming communication
+ * from slaves to update process table, slave table and send feedback to slaves, etc.
+ * 
+ * Protocol: type definition
  * 0: slave -> master, notify new slave or update rpt
  * 1: slave -> master, ask for ps
  * 2: master-> slave, return ps
  * 3: master-> slave, ask to move process
  * 4: slave -> slave, move process to another slave
  * 
- */
+ * @author Guanyu Wang
+ * */
 
 
 public class CommMasterListenThread extends Thread {
@@ -28,13 +28,8 @@ public class CommMasterListenThread extends Thread {
     private boolean debug = false;
   
     private Socket socket = null;
-    private String receivingcontent = new String();
-    private RunningProcessTable rpt;
     private SlaveTable st;
-    private InetAddress Address; 
-    private BufferedReader in;
     private InputStream is;
-    private OutputStream os;
     private Serializer ser;
     private byte[] bytearray;
 
@@ -66,7 +61,8 @@ public class CommMasterListenThread extends Thread {
         
         if(st.containsKey(slavehost)){
           printDebugInfo("receiving old slave update");
-          st.putslave(slavehost, temprpt);//st.resetlifetime_updaterpt(slavehost, temprpt); //same as st.putslave()
+          //same as st.putslave()
+          st.putslave(slavehost, temprpt);
         }
         else{
           printDebugInfo("receiving new slave+");
@@ -80,7 +76,6 @@ public class CommMasterListenThread extends Thread {
         String remotename = remoteps.split(" ")[0];
         int remoteport = Integer.parseInt(remoteps.split(" ")[1]);
         printDebugInfo("received slave: " + remotename + remoteport + "'s ps request");
-        
         instruction[0] = Byte.valueOf("2");
         
         byte[] sendst = ser.serializeObj(st);

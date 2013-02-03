@@ -1,4 +1,15 @@
 
+/**
+ * ProcessBalancerStrategist: This Strategist is used to implement the method for balancing
+ * jobs. By adjusting the relationship between balancednum (number of processes need to be
+ * moved from the machine with most jobs to machine with fewest jobs) and offset (the job distance
+ * between these two machine), the balancing strategy can be more efficient and stable.
+ * 
+ * Current strategy is let the balancednum = offset, or balancednum = offset / 5 if the offset 
+ * is larger than 10.
+ * 
+ * @author Guanyu Wang
+ * */
 public class ProcessBalancerStrategist {
   private boolean debug = false;
   private RunningProcessTable rpt;
@@ -42,8 +53,9 @@ public class ProcessBalancerStrategist {
     int offset = Math.max(0, Math.min(maxnum - averagenum, averagenum - minnum));
 
 //  int balancednum = offset / 10;
-//  just for test
+
     int balancednum = offset;
+    if(balancednum > 10)balancednum /= 5;
     
     printDebugInfo("finish offsetting: " + balancednum);
     

@@ -1,15 +1,19 @@
 import java.io.IOException;
 import java.net.ServerSocket;
 
-/* Protocol: type definition
+/**
+ * CommListener: Listenr from the ProcessManager, which deals with incoming 
+ * communication request.
+ * 
+ * Protocol: type definition
  * 0: slave -> master, notify new slave or update rpt
  * 1: slave -> master, ask for ps
  * 2: master-> slave, return ps
  * 3: master-> slave, ask to move process
  * 4: slave -> slave, move process to another slave
  * 
- */
-
+ * @author Guanyu Wang
+ * */
 public class CommListener implements Runnable {
 
   private static boolean listening;
@@ -35,7 +39,6 @@ public class CommListener implements Runnable {
   public void run(){
     ServerSocket serverSocket = null;
     listening = true;
-
     try {
         serverSocket = new ServerSocket(port);
         System.out.println("Start listening...");
@@ -51,7 +54,7 @@ public class CommListener implements Runnable {
         }
         else new CommSlaveListenThread(serverSocket.accept(), rpt, st).start();
       } catch (IOException e) {
-        // TODO Auto-generated catch block
+
         e.printStackTrace();
       }
     }
@@ -59,7 +62,7 @@ public class CommListener implements Runnable {
     try {
       serverSocket.close();
     } catch (IOException e) {
-      // TODO Auto-generated catch block
+
       e.printStackTrace();
     }
   }

@@ -1,4 +1,11 @@
 
+/**
+ * ProcessBalancer: ProcessBalancer is used to do the slave checking (SlaveChecker) first and then 
+ * to do the job balancing (ProcessBalancerStrategist) according to the updated slave information.
+ * 
+ * @author Guanyu Wang
+ * */
+
 public class ProcessBalancer implements Runnable{
   private boolean debug = false;
   private SlaveChecker schecker;

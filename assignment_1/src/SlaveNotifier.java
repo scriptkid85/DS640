@@ -1,4 +1,9 @@
-
+/**
+ * SlaveNotifier: SlaveNotifier is the separated thread class for sending alive (heartbeat) message
+ * to master every 5 seconds.
+ * 
+ * @author Guanyu Wang
+ * */
 public class SlaveNotifier implements Runnable{
   private boolean debug = false;
 

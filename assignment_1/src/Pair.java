@@ -1,8 +1,11 @@
 import java.io.Serializable;
 
 /**
+ * The Pair class is used to send a pair of serialized objects, which implements the 
+ * Serializable interface.
  * 
- */
+ * @author Guanyu Wang
+ * */
 public class Pair<L,R> implements Serializable{
 
  

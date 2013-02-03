@@ -7,12 +7,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import sun.print.resources.serviceui;
-
-
 /**
  * ProcessManager is a process management tool which support Migratable process and load
- * re-distribution.
+ * re-distribution (job balancing).
  * 
  * @author Guanyu Wang
  * */ 
@@ -20,11 +17,9 @@ public class ProcessManager {
 
   private static RunningProcessTable process_table;
   private static SlaveTable slave_table;
- 
   private static Thread listenthread;
   private static ProcessBalancer pb;
   private static SlaveNotifier sn;
-  
   private static int localport;
   private static int masterport;
 
@@ -199,7 +194,7 @@ public class ProcessManager {
       ScheduledFuture<?> schFuture = schExec.scheduleWithFixedDelay(sn, 0, 5, TimeUnit.SECONDS);
     }
     
-    System.out.println(localhostname);
+    System.out.println("Localhostname: " + localhostname);
     while (true) {
       System.out.print("==> ");
       commandline = in.readLine();

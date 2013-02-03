@@ -5,8 +5,13 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+/**
+ * CommMoveProcess: The CommMoveProcess Class is used to send the message to slaves for
+ * moving certain number of local processes to other slaves for balancing jobs.
+ * 
+ * @author Guanyu Wang
+ * */
 
-//public class CommMoveProcess implements Runnable{
 public class CommMoveProcess implements MigratableProcess{
   
   private boolean debug = false;
@@ -62,19 +67,17 @@ public class CommMoveProcess implements MigratableProcess{
       bsender.run();
       bsender.close();
     }
-
     out.close();
+    
     try {
       ClientSocket.close();
     } catch (IOException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }
 
   @Override
   public void suspend() {
-    // TODO Auto-generated method stub
     suspending = true;
     while (suspending)
       ;

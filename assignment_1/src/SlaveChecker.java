@@ -13,14 +13,12 @@ import java.util.Arrays;
 
 
 
-/* Protocol: type definition
- * 0: slave -> master, notify new slave
- * 1: slave -> master, after receiving check message, updating running process table;
- * 2: master-> slave, check alive
- * 3: master-> slave, ask to move process
- * 4: slave -> slave, move process to another slave
+/**
+ * SlaveChecker: SlaveChecker is used in Balancer which check the slaves' status in
+ * the slave table, and remove timeout slaves from the table.
  * 
- */
+ * @author Guanyu Wang
+ * */
 
 public class SlaveChecker implements Runnable{
   

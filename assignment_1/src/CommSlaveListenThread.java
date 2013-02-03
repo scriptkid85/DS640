@@ -10,26 +10,27 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.Socket;
 import java.util.Arrays;
 
-/* Protocol: type definition
+/**
+ * CommSlaveListenThread: MasterListenThread class, which handles the incoming communication
+ * from master to check the alive status, asking for ps operation and send local process table
+ * to master machine.
+ * 
+ * Protocol: type definition
  * 0: slave -> master, notify new slave or update rpt
  * 1: slave -> master, ask for ps
  * 2: master-> slave, return ps
  * 3: master-> slave, ask to move process
  * 4: slave -> slave, move process to another slave
  * 
- */
+ * @author Guanyu Wang
+ * */
 
 public class CommSlaveListenThread extends Thread {
   private boolean debug = false;
-
   private Socket socket = null;
-
   private RunningProcessTable rpt;
-
   private SlaveTable st;
-
   private Serializer ser;
-
   private InputStream is;
 
   public CommSlaveListenThread(Socket socket, RunningProcessTable rpt, SlaveTable st) {
@@ -133,24 +134,11 @@ public class CommSlaveListenThread extends Thread {
       byte buffer[] = new byte[1024];
       int s;
       byte[] bytearray = null;
-      // if((s = dis.read(buffer)) != -1){
-      // System.out.println("SlaveListen: " + s);
-      // baos.write(buffer, 0, s);
-      // bytearray = baos.toByteArray();
-      // }
 
       int cnt = 0;
-      // for(; (dis.available() != 0); )
-      // { s = dis.read(buffer);
-      // printDebugInfo("SlaveListen: " + s);
-      // cnt += s;
-      // baos.write(buffer, 0, s);
-      // if(s == 2)break;
-      // }
+
       printDebugInfo("SlaveListen: total num: " + cnt);
 
-      // TODO: change
-      // As a result, the available() method is really not good for much. You can use it to avoid blocking reads, but then you lose your ability to detect and EOF, because when you get to the end avilable() == 0, and you can't know if it's a real EOF or just a network delay until you do a read() and get the -1 indicating EOF. 
       for (; (s = dis.read(buffer)) != -1;) {
         System.out.println("SlaveListen: " + s);
         baos.write(buffer, 0, s);
@@ -161,11 +149,6 @@ public class CommSlaveListenThread extends Thread {
 
       if (bytearray != null && cnt != 0)
         slavehandler(bytearray);
-      //
-      // baos.close();
-      // dis.close();
-      // is.close();
-      // socket.close();
 
     } catch (IOException e) {
       e.printStackTrace();

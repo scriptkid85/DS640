@@ -3,7 +3,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.StringTokenizer;
 
 /**
- * ProcessRunner is a separated thread for running command process
+ * ProcessRunner:ProcessRunner is a separated thread for running command process, which can support
+ * the feedback termination information and update the process table immediately.
  * 
  * @author Guanyu Wang
  * */
@@ -96,7 +97,7 @@ public class ProcessRunner extends Thread{
         }
         else{
           System.out.println("Process " + process_table.get(mp) + " was moved");
-          // TODO: suspend case, no need to output termination info.
+          // suspend case, no need to output termination info, but moved info
           
         }
       } catch (Exception e) {

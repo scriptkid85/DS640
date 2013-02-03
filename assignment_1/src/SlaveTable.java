@@ -2,7 +2,12 @@ import java.io.Serializable;
 import java.util.Hashtable;
 import java.util.Set;
 
-
+/**
+ * SlaveTable is a structed table with synchronized add and remove
+ * method for updating the slave list in ProcessManager
+ * 
+ * @author Guanyu Wang 
+ * */
 public class SlaveTable implements Serializable{
   //String[0] is the slave hostname, String[1] is the port
   //and integer is the process running on corresponding slave.
