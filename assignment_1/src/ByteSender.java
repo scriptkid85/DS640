@@ -85,6 +85,9 @@ public class ByteSender {
         e.printStackTrace();
       }
     }
+    // TODO: change
+    // IMP: close
+    close();
     printDebugInfo("finished");
   }
   
