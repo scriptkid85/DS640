@@ -20,8 +20,8 @@ public class ProcessManager {
   private static Thread listenthread;
   private static ProcessBalancer pb;
   private static SlaveNotifier sn;
-  private static int localport;
-  private static int masterport;
+  private static int localport = 4444;
+  private static int masterport = 4444;
 
   private static String mode = new String();
   private static String masterhostname = new String();
@@ -130,14 +130,14 @@ public class ProcessManager {
     }
     if(args.length % 2 != 0){
       System.out.println("Invalid arguments for ProcessManager.");
-      System.out.println("Usage: no args or ”-p <local port> (for master)” ”-c <hostname>” ”-mp <master port>” ”-sp <s port>” ");
+      System.out.println("Usage: no args or ”-p <local port> (for changing master listen port)” ”-c <masterhostname>” ”-mp <master port>” ”-sp <s port>” ");
+      System.out.println("Default port for master is 4444");
       System.exit(0);
     }
     for(int i = 0; i < args.length; ++i){
       if(args[i].equals("-c")){
         ++i;
         mode = "Slave";
-        localport = 4444;
         masterhostname = args[i];
       }
       else if(args[i].equals("-p")){
@@ -157,7 +157,8 @@ public class ProcessManager {
       }
       else {
         System.out.println("Invalid arguments for ProcessManager.");
-        System.out.println("Usage: no args or ”-c <hostname>” ”-mp <master port>” ”-sp <s port>” ");
+        System.out.println("Usage: no args or ”-p <local port> (for changing master listen port)” ”-c <masterhostname>” ”-mp <master port>” ”-sp <s port>” ");
+        System.out.println("Default port for master is 4444");
         System.exit(0);
       }
     }
