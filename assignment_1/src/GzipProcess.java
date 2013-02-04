@@ -90,7 +90,7 @@ public class GzipProcess implements MigratableProcess {
         e.printStackTrace();
       }
     }*/
-    
+      
     try {
       GZIPOutputStream gos = new GZIPOutputStream(outFile);
       
