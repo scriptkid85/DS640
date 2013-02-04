@@ -23,21 +23,33 @@ import javax.imageio.ImageIO;
  * Edge detection process, which detects edges on a original image and output the detected result to
  * a specific position.
  * 
- * @author Zeyuan Li  
- * */ 
+ * @author Zeyuan Li
+ * */
 public class EdgeProcess implements MigratableProcess {
   private static final long serialVersionUID = 2L;
+
   private TransactionalFileInputStream inFile;
+
   private TransactionalFileOutputStream outFile;
+
   private String id;
+
   private String pathPrefix;
+
   private boolean readDone;
+
   private boolean writeDone;
+
   private int height;
+
   private int width;
+
   private int picsize;
+
   private byte[] picbuf;
+
   private int idxbuf;
+
   private volatile boolean suspending;
 
   public EdgeProcess(String args[]) throws Exception {
@@ -46,7 +58,6 @@ public class EdgeProcess implements MigratableProcess {
       throw new Exception("Invalid Arguments");
     }
 
-    // TODO: pathPrefix is a afs prefix for input/output file
     pathPrefix = "";
     String[] tmp = args[1].split("/");
     id = tmp[tmp.length - 1] + "_EdgeProcess";
@@ -85,7 +96,7 @@ public class EdgeProcess implements MigratableProcess {
             // http://www.tomgibara.com/computer-vision/canny-edge-detector and
             // http://www.mkyong.com/java/how-to-convert-byte-to-bufferedimage-in-java/
             // detect edge
-            CannyEdgeDetector detector = new CannyEdgeDetector(); 
+            CannyEdgeDetector detector = new CannyEdgeDetector();
             // adjust its parameters as desired
             detector.setLowThreshold(0.3f);
             detector.setHighThreshold(1f);
@@ -107,7 +118,6 @@ public class EdgeProcess implements MigratableProcess {
           }
           picbuf[idxbuf++] = (byte) c;
         } else if (readDone && !writeDone) {
-          // TODO: how to write streaming img
           if (idxbuf == picbuf.length) {
             System.out.println("[EdgeDectectionProcess]: Detection finished!");
             break;
@@ -123,7 +133,7 @@ public class EdgeProcess implements MigratableProcess {
       System.err.println("[EdgeDetectionProcess]: Error: " + e);
       e.printStackTrace();
 
-    } 
+    }
 
     // wake up suspend() so that we can call suspend() next time.
     suspending = false;
@@ -147,7 +157,6 @@ public class EdgeProcess implements MigratableProcess {
     Thread t = new Thread(ep);
     t.start();
     ep.suspend();
-//    Thread.sleep(1);
 
     Serializer se = new Serializer();
     byte[] res = se.serializeObj(ep);

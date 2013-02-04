@@ -1,8 +1,11 @@
 import java.io.*;
 
+/**
+ * TransactionalFileInputStream can do transactional file write to facilitate process migration
+ * 
+ * @author Zeyuan Li
+ * */
 public class TransactionalFileOutputStream extends OutputStream implements Serializable {
-
-  //private RandomAccessFile raf;
   private File f;
 
   private int curidx;
@@ -10,18 +13,16 @@ public class TransactionalFileOutputStream extends OutputStream implements Seria
   public TransactionalFileOutputStream(String fpath) {
     String dir = fpath.substring(0, fpath.lastIndexOf("/"));
     File fdir = new File(dir);
-    if(!fdir.exists())
+    if (!fdir.exists())
       fdir.mkdir();
-     
+
     f = new File(fpath);
-    if(f.exists())
+    if (f.exists())
       f.delete();
-    
+
     curidx = 0;
-    //RandomAccessFile raf = null;
     try {
       f.createNewFile();
-      //raf = new RandomAccessFile(f, "rw");
     } catch (FileNotFoundException e) {
       System.err.println("Output file not found exception.");
       e.printStackTrace();
@@ -31,48 +32,26 @@ public class TransactionalFileOutputStream extends OutputStream implements Seria
     }
 
   }
-  
-  
 
   @Override
   public void write(int wbyte) throws IOException {
     RandomAccessFile raf = new RandomAccessFile(f, "rw");
     raf.seek(curidx);
-    
-    //System.out.println(curidx);
-    
+
     curidx++;
     raf.write(wbyte);
     raf.close();
   }
-   
-  /*@Override
-  public void write(byte[] b, int len, int off) {
-    try { 
-      RandomAccessFile raf = new RandomAccessFile(f, "rw");
-      raf.seek(curidx);
-      raf.write(b, len, off);
-      curidx += len;
-      raf.close();
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-  }
-  
-  @Override
-  public void write(byte[] b) {
-    try {
-      RandomAccessFile raf = new RandomAccessFile(f, "rw");
-      raf.seek(curidx);
-      raf.write(b);
-      curidx += b.length;
-      raf.close();
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-  }
-  */
+
+  /*
+   * @Override public void write(byte[] b, int len, int off) { try { RandomAccessFile raf = new
+   * RandomAccessFile(f, "rw"); raf.seek(curidx); raf.write(b, len, off); curidx += len;
+   * raf.close(); } catch (IOException e) { // TODO Auto-generated catch block e.printStackTrace();
+   * } }
+   * 
+   * @Override public void write(byte[] b) { try { RandomAccessFile raf = new RandomAccessFile(f,
+   * "rw"); raf.seek(curidx); raf.write(b); curidx += b.length; raf.close(); } catch (IOException e)
+   * { // TODO Auto-generated catch block e.printStackTrace(); } }
+   */
 
 }

@@ -19,19 +19,17 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 /**
- * ZipProcess is a implmentation of MigratableProcess, which can zip a input file to a specific
+ * ZipProcess is a implmentation of MigratableProcess, which can gzip a input file to a specific
  * output position.
  * 
  * @author Zeyuan Li
  * */
 public class GzipProcess implements MigratableProcess {
   private static final long serialVersionUID = 3L;
+
   private TransactionalFileInputStream inFile;
 
   private TransactionalFileOutputStream outFile;
-
-//   private FileInputStream inFile;
-//   private FileOutputStream outFile;
 
   private String id;
 
@@ -41,18 +39,14 @@ public class GzipProcess implements MigratableProcess {
 
   public GzipProcess(String args[]) throws Exception {
     if (args.length != 3) {
-      // System.out.println(args.length + " " + args[0] +" "+ args[1]);
       System.out.println("usage: ZipProcess <inputFile1> <outputFile>");
       throw new Exception(" Invalid Arguments");
     }
 
-    // TODO: pathPrefix is a afs prefix for input/output file
     pathPrefix = "";
     String[] tmp = args[1].split("/");
     id = tmp[tmp.length - 1] + "_ZipProcess";
     infilename = args[1];
-//     inFile = new FileInputStream(args[1]);
-//     outFile = new FileOutputStream(args[2]);
     inFile = new TransactionalFileInputStream(args[1]);
     outFile = new TransactionalFileOutputStream(args[2]);
   }
@@ -67,52 +61,27 @@ public class GzipProcess implements MigratableProcess {
    * Note: some zip code is adapted from Chapter I/O in book "Think in Java"
    * */
   public void run() {
-    /*String objname = pathPrefix + "data/serialize/" + id + ".dat";
-    File objFile = new File(objname);
-    
-    // if it resumes running, read object in
-    if (objFile.exists()) {
-      try {
-        ObjectInputStream in = new ObjectInputStream(new TransactionalFileInputStream(objname));
-        GzipProcess zp = (GzipProcess) in.readObject();
-        this.id = zp.id;
-        this.inFile = zp.inFile;
-        this.outFile = zp.outFile;
-        this.pathPrefix = zp.pathPrefix;
-        this.suspending = zp.suspending;
-        // delete serialized file
-        objFile.delete();
-      } catch (IOException e) {
-        System.err.println("Deserialize IOException " + objname);
-        e.printStackTrace();
-      } catch (ClassNotFoundException e) {
-        System.err.println("Deserialize ClassNotFoundException " + objname);
-        e.printStackTrace();
-      }
-    }*/
-      
     try {
       GZIPOutputStream gos = new GZIPOutputStream(outFile);
-      
+
       while (!suspending) {
         // read and write a byte each time
         int c = inFile.read();
         if (c == -1) {
           // Checksum valid only after the file has been closed!
-          System.out
-                  .println("[GzipProcess]: Write done! ");
+          System.out.println("[GzipProcess]: Write done! ");
           break;
         }
         gos.write(c);
         gos.flush();
-  
+
         // Make ZipProcess take longer
         try {
-          Thread.sleep(1000);   
+          Thread.sleep(1000);
         } catch (InterruptedException e) {
           System.out.println("sleep interrupted");
         }
-      } 
+      }
       // close the stream
       gos.flush();
       gos.close();
@@ -125,9 +94,8 @@ public class GzipProcess implements MigratableProcess {
     // wake up suspend() so that we can call suspend() next time.
     suspending = false;
     System.out.println("Gzip: run finished.");
-    System.out.flush(); 
+    System.out.flush();
   }
-
 
   public void suspend() {
     System.out.println("Gzip: suspend() is called.");
@@ -139,29 +107,9 @@ public class GzipProcess implements MigratableProcess {
     System.out.flush();
 
   }
-  
-  /*public void serialize() {
-    // package up
-    // TODO: this path need to be on afs so that multiple processes can access
-    String objname = pathPrefix + "data/serialize/" + id + ".dat";
-    try {
-      ObjectOutput s = new ObjectOutputStream(new TransactionalFileOutputStream(objname));
-      s.writeObject(this);
-      s.flush();
-      s.close();
-
-    } catch (FileNotFoundException e1) {
-      System.err.println("Serialize file not found. id:" + id);
-      e1.printStackTrace();
-    } catch (IOException e1) {
-      System.err.println("Serialize file io exception. id:" + id);
-      System.err.println(e1);
-      e1.printStackTrace();
-    }
-  }*/
 
   @Override
-  public String toString() { 
+  public String toString() {
     return id;
   }
 
@@ -175,9 +123,8 @@ public class GzipProcess implements MigratableProcess {
     Serializer se = new Serializer();
     byte[] res = se.serializeObj(zp);
     zp = (GzipProcess) se.deserializeObj(res);
-    //Thread.sleep(1000);
-    t = new Thread(zp); 
+    t = new Thread(zp);
     t.start();
-  } 
+  }
 
 }

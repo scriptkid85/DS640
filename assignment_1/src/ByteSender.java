@@ -5,9 +5,15 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+/**
+ * ByteSender: send bytes in socket communication
+ * 
+ * @author Zeyuan Li
+ * */
 public class ByteSender {
 
   private boolean debug = false;
+
   private Socket ClientSocket;
 
   private String hostname;
@@ -15,6 +21,7 @@ public class ByteSender {
   private int port;
 
   private OutputStream os;
+
   DataOutputStream out;
 
   private byte[] msg;
@@ -36,15 +43,15 @@ public class ByteSender {
     this.type = type;
   }
 
-  public void printDebugInfo(String s){
-    if(debug)
+  public void printDebugInfo(String s) {
+    if (debug)
       System.out.println("ByteSender: " + s);
   }
-  
+
   public void run() {
 
     out = null;
-    if(ClientSocket != null){
+    if (ClientSocket != null) {
       try {
         os = ClientSocket.getOutputStream();
         out = new DataOutputStream(os);
@@ -52,13 +59,12 @@ public class ByteSender {
         // TODO Auto-generated catch block
         e.printStackTrace();
       }
-    }
-    else{
+    } else {
       try {
         ClientSocket = new Socket(hostname, port);
         os = ClientSocket.getOutputStream();
         out = new DataOutputStream(os);
-  
+
       } catch (UnknownHostException e) {
         System.err.println("ByteSender: Don't know about host: " + hostname);
         System.exit(1);
@@ -73,10 +79,10 @@ public class ByteSender {
       System.arraycopy(type, 0, sendingbarray, 0, type.length);
       System.arraycopy(msg, 0, sendingbarray, type.length, msg.length);
       // write type
-      
+
       try {
 
-        for (byte b : sendingbarray){
+        for (byte b : sendingbarray) {
           out.writeByte(b);
           out.flush();
         }
@@ -85,27 +91,25 @@ public class ByteSender {
         e.printStackTrace();
       }
     }
-    // TODO: change
     // IMP: close
     close();
     printDebugInfo("finished");
   }
-  
-  public Socket socket(){
-    if(ClientSocket == null){
+
+  public Socket socket() {
+    if (ClientSocket == null) {
       printDebugInfo("null socket");
     }
     return this.ClientSocket;
   }
-  
-  public void close(){
+
+  public void close() {
     try {
       out.close();
       os.close();
       ClientSocket.close();
       printDebugInfo("close socket");
     } catch (IOException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }

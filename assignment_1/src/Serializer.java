@@ -18,29 +18,30 @@ import java.util.UUID;
  * */
 public class Serializer {
   private String pathPrefix = ""; // afs string
-  private boolean debug  = false;
-  
-  public void printDebugInfo(String s){
-    if(debug)
+
+  private boolean debug = false;
+
+  public void printDebugInfo(String s) {
+    if (debug)
       System.out.println("Serializer: " + s);
   }
-  
+
   public byte[] serializeObj(Serializable obj) {
     ByteArrayOutputStream bos = new ByteArrayOutputStream();
     ObjectOutput out = null;
     byte[] outbytes = null;
-    
+
     printDebugInfo(" start");
-     
+
     try {
-      out = new ObjectOutputStream(bos);   
+      out = new ObjectOutputStream(bos);
       out.writeObject(obj);
       out.flush();
       outbytes = bos.toByteArray();
-      
-      bos.close(); 
-      out.close(); 
- 
+
+      bos.close();
+      out.close();
+
     } catch (FileNotFoundException e1) {
       System.err.println(e1);
       e1.printStackTrace();
@@ -50,26 +51,26 @@ public class Serializer {
     }
     return outbytes;
   }
-  
+
   public byte[] serializeMP(MigratableProcess mp) {
     ByteArrayOutputStream bos = new ByteArrayOutputStream();
     ObjectOutput out = null;
     byte[] outbytes = null;
-    
+
     printDebugInfo("start");
-    
+
     // suspend process
     mp.suspend();
-    
+
     try {
-      out = new ObjectOutputStream(bos);   
+      out = new ObjectOutputStream(bos);
       out.writeObject(mp);
       out.flush();
       outbytes = bos.toByteArray();
-      
+
       bos.close();
-      out.close(); 
- 
+      out.close();
+
     } catch (FileNotFoundException e1) {
       System.err.println(e1);
       e1.printStackTrace();
@@ -79,7 +80,7 @@ public class Serializer {
     }
     return outbytes;
   }
-  
+
   public Object deserializeObj(byte[] objbytes) {
     Serializable obj = null;
     ByteArrayInputStream bis = new ByteArrayInputStream(objbytes);
@@ -89,8 +90,8 @@ public class Serializer {
     if (objbytes != null) {
       try {
         in = new ObjectInputStream(bis);
-        obj = (Serializable)in.readObject(); 
-        
+        obj = (Serializable) in.readObject();
+
       } catch (IOException e) {
         System.err.println("Deserialize IOException");
         e.printStackTrace();
@@ -98,13 +99,12 @@ public class Serializer {
         System.err.println("Deserialize ClassNotFoundException ");
         e.printStackTrace();
       }
-    }
-    else {
+    } else {
       System.out.println("Deserialize failed: obj byte array null");
     }
-    if(obj == null)
+    if (obj == null)
       System.out.println("Deserialized result null");
-    
+
     try {
       bis.close();
       in.close();
@@ -113,7 +113,7 @@ public class Serializer {
     }
     return obj;
   }
-  
+
   public MigratableProcess deserializeMP(byte[] objbytes) {
     MigratableProcess mp = null;
     ByteArrayInputStream bis = new ByteArrayInputStream(objbytes);
@@ -123,8 +123,8 @@ public class Serializer {
     if (objbytes != null) {
       try {
         in = new ObjectInputStream(bis);
-        mp = (MigratableProcess) in.readObject(); 
-        
+        mp = (MigratableProcess) in.readObject();
+
       } catch (IOException e) {
         System.err.println("Deserialize IOException");
         e.printStackTrace();
@@ -132,13 +132,12 @@ public class Serializer {
         System.err.println("Deserialize ClassNotFoundException ");
         e.printStackTrace();
       }
-    }
-    else {
+    } else {
       System.out.println("Deserialize failed: obj byte array null");
     }
-    if(mp == null)
+    if (mp == null)
       System.out.println("Deserialized result null");
-    
+
     try {
       bis.close();
       in.close();
@@ -152,20 +151,20 @@ public class Serializer {
   public String serializeFile(MigratableProcess mp) {
     printDebugInfo(" start");
     String id = UUID.randomUUID().toString();
-    
+
     File dir = new File(pathPrefix + "data/serialize/");
-    if(!dir.exists())
+    if (!dir.exists())
       dir.mkdir();
     String objname = pathPrefix + "data/serialize/" + id + ".dat";
     // suspend process
     mp.suspend();
-    
+
     try {
       ObjectOutput s = new ObjectOutputStream(new TransactionalFileOutputStream(objname));
       s.writeObject(mp);
       s.flush();
-      s.close(); 
- 
+      s.close();
+
     } catch (FileNotFoundException e1) {
       System.err.println("Serialize file not found. id:" + id);
       e1.printStackTrace();
@@ -186,7 +185,7 @@ public class Serializer {
       try {
         ObjectInputStream in = new ObjectInputStream(new TransactionalFileInputStream(objname));
         mp = (MigratableProcess) in.readObject();
-        
+
         // delete serialized file
         objFile.delete();
       } catch (IOException e) {
@@ -196,20 +195,12 @@ public class Serializer {
         System.err.println("Deserialize ClassNotFoundException " + objname);
         e.printStackTrace();
       }
-    }
-    else {
+    } else {
       System.out.println("Deserialize failed: no object file avaliable");
     }
-    if(mp == null)System.out.println("Deserialized result null");
+    if (mp == null)
+      System.out.println("Deserialized result null");
     return mp;
-  }
-
-  /**
-   * @param args
-   */
-  public static void main(String[] args) {
-    // TODO Auto-generated method stub
-    
   }
 
 }

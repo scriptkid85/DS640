@@ -1,8 +1,12 @@
 import java.io.*;
 
+/**
+ * TransactionalFileInputStream can do transactional file read to facilitate process migration
+ * 
+ * @author Zeyuan Li
+ * */
 public class TransactionalFileInputStream extends InputStream implements Serializable {
  
-  //private RandomAccessFile raf;
   private File f;
  
   private int curidx;
@@ -10,14 +14,6 @@ public class TransactionalFileInputStream extends InputStream implements Seriali
   public TransactionalFileInputStream(String fpath) {
     f = new File(fpath);
     curidx = 0;
-    //raf = null;
-    /*try {
-      raf = new RandomAccessFile(f, "rw");
-    } catch (FileNotFoundException e) {
-      System.err.println("Input file not found exception.");
-      e.printStackTrace(); 
-    }*/
-
   }
 
   @Override
@@ -25,9 +21,6 @@ public class TransactionalFileInputStream extends InputStream implements Seriali
     RandomAccessFile raf = new RandomAccessFile(f, "rw");
     raf.seek(curidx);
     
-    //System.out.println(curidx);
-    
-    // TODO: bottleneck. Should read n bytes instead of one
     curidx++;
     int res = raf.read();
 
@@ -39,8 +32,6 @@ public class TransactionalFileInputStream extends InputStream implements Seriali
   public int read(byte[] b) throws IOException {
     RandomAccessFile raf = new RandomAccessFile(f, "rw");
     raf.seek(curidx);
-    
-    //System.out.println(curidx);
     
     int res = raf.read(b);
     curidx += res;
@@ -54,8 +45,6 @@ public class TransactionalFileInputStream extends InputStream implements Seriali
     RandomAccessFile raf = new RandomAccessFile(f, "rw");
     raf.seek(curidx);
     
-    //System.out.println(curidx);
-     
     int res = raf.read(b, len, off);
     curidx += res;
     
