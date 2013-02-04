@@ -140,7 +140,7 @@ public class CommSlaveListenThread extends Thread {
       printDebugInfo("SlaveListen: total num: " + cnt);
 
       for (; (s = dis.read(buffer)) != -1;) {
-        System.out.println("SlaveListen: " + s);
+        printDebugInfo("SlaveListen: " + s);
         baos.write(buffer, 0, s);
         cnt += s;
       }
