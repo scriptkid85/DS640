@@ -1,0 +1,3 @@
+asdasdimport java.io.PrintStream;
+GzipProcess data/test.txt data/r1.gz
+EdgeProcess data/img.jpg data/r1.jpg
