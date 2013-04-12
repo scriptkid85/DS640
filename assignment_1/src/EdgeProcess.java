@@ -1,22 +1,10 @@
 import java.awt.image.BufferedImage;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
-import java.util.Arrays;
-import java.util.zip.Adler32;
-import java.util.zip.CheckedOutputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
 import javax.imageio.ImageIO;
 
 /**
